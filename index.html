@@ -439,6 +439,26 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
   </div>
 </div>
 
+<!-- INVALID CODE SCREEN -->
+<div id="invalid-code-screen" style="display:none;position:fixed;inset:0;background:var(--cream);background-image:radial-gradient(ellipse at 20% 0%,#c8e6d4,transparent 55%),radial-gradient(ellipse at 80% 100%,#d4e8d4,transparent 55%);align-items:center;justify-content:center;padding:2rem 1rem;z-index:7000;">
+  <div style="background:var(--white);border-radius:20px;box-shadow:var(--sh2);max-width:420px;width:100%;overflow:hidden;text-align:center;">
+    <div style="background:var(--forest);padding:2rem;">
+      <div style="font-size:52px;margin-bottom:10px;">🏕️</div>
+      <h1 style="color:#fff;font-size:22px;margin-bottom:6px;">Trip Not Found</h1>
+      <p style="color:rgba(255,255,255,.72);font-size:13px;font-family:'Nunito',sans-serif;">This trip code doesn't match any active trip.</p>
+    </div>
+    <div style="padding:2rem;">
+      <div style="background:#fef3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;margin-bottom:1.4rem;font-size:13px;color:#7a5400;text-align:left;line-height:1.7;">
+        <b>Code used:</b> <span id="invalid-code-display" style="font-family:'Playfair Display',serif;font-size:15px;letter-spacing:2px;color:var(--forest);"></span><br>
+        The trip may have been deleted, or the link may contain a typo.
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1.4rem;line-height:1.6;">Ask the trip organiser to re-share the link, or start a brand new trip below.</p>
+      <button onclick="startFreshTrip()" style="width:100%;padding:12px;background:var(--forest);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:10px;">🚀 Start a New Trip</button>
+      <button onclick="retryCode()" style="width:100%;padding:10px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;">↩ Try a Different Code</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETUP WIZARD -->
 <div id="setup">
   <div class="setup-card">
@@ -628,17 +648,14 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 // ═══════════════════════════════════════════════════════
 // ⚠️  CONFIGURATION — REPLACE WITH YOUR ACTUAL VALUES
 // ═══════════════════════════════════════════════════════
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCWSDf76mUeK6d5nb64nghv4a65z8iKmXk",
-  authDomain: "camp-planner-875b4.firebaseapp.com",
-  projectId: "camp-planner-875b4",
-  storageBucket: "camp-planner-875b4.firebasestorage.app",
-  messagingSenderId: "891401125164",
-  appId: "1:891401125164:web:bfa0fe66f7fc1ebdd60089",
-};
-
-
-
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCWSDf76mUeK6d5nb64nghv4a65z8iKmXk",
+    authDomain: "camp-planner-875b4.firebaseapp.com",
+    projectId: "camp-planner-875b4",
+    storageBucket: "camp-planner-875b4.firebasestorage.app",
+    messagingSenderId: "891401125164",
+    appId: "1:891401125164:web:bfa0fe66f7fc1ebdd60089",
+  };
 const EMAIL_LINK_URL = window.location.href;
 
 firebase.initializeApp(FIREBASE_CONFIG);
@@ -965,34 +982,67 @@ async function routeAfterAuth(user){
   }
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('ls').style.display='flex';
-  const codeFromURL=getTripCodeFromURL();
-  const savedCode  =localStorage.getItem('campTripCode');
-  const activeCode =codeFromURL||savedCode;
+
+  // ── URL hash ALWAYS wins over localStorage ──────────────────────────────
+  // This ensures shared links always open the correct trip regardless of
+  // whatever trip this device previously had saved.
+  const codeFromURL = getTripCodeFromURL();
+  const savedCode   = localStorage.getItem('campTripCode');
+
+  // If the URL has a code that differs from the saved code, clear the saved
+  // code so there's no confusion — the visitor is joining a different trip.
+  if(codeFromURL && codeFromURL !== savedCode){
+    localStorage.removeItem('campTripCode');
+  }
+
+  const activeCode = codeFromURL || savedCode;
+
+  // No code anywhere → brand new trip, show setup wizard
   if(!activeCode){
     document.getElementById('ls').style.display='none';
     renderFamBuilder();
     document.getElementById('setup').style.display='flex';
     return;
   }
+
   document.getElementById('ls-msg').textContent='Loading trip…';
   const lsSub=document.getElementById('ls-sub');
   if(lsSub) lsSub.textContent=activeCode;
+
   const data=await fbGet(activeCode);
   document.getElementById('ls').style.display='none';
+
+  // ── Trip not found in Firebase ───────────────────────────────────────────
   if(!data||!data.tripName){
-    TRIP_CODE=activeCode; renderFamBuilder();
-    document.getElementById('setup').style.display='flex';
+    if(codeFromURL){
+      // Someone followed a shared link but the trip doesn't exist (deleted /
+      // wrong code). Show a clear error — do NOT open the setup wizard with
+      // their code, which would let a stranger overwrite the trip.
+      showInvalidCodeScreen(codeFromURL);
+    } else {
+      // Their locally saved code no longer resolves — start fresh
+      localStorage.removeItem('campTripCode');
+      renderFamBuilder();
+      document.getElementById('setup').style.display='flex';
+    }
     return;
   }
+
+  // ── Trip found — load and route ──────────────────────────────────────────
   TRIP_CODE=activeCode;
   loadTripData(data);
   localStorage.setItem('campTripCode',TRIP_CODE);
-  const identities=data.identities||{};
-  const linkedName=identities[user.uid];
-  const allMembers=families.flatMap(f=>f.members);
-  if(linkedName&&allMembers.includes(linkedName)){
-    currentUser=linkedName; showApp();
+
+  const identities  = data.identities||{};
+  const linkedName  = identities[user.uid];
+  const allMembers  = families.flatMap(f=>f.members);
+
+  if(linkedName && allMembers.includes(linkedName)){
+    // Returning user — recognised on this device, go straight to app
+    currentUser=linkedName;
+    showApp();
   } else {
+    // New visitor to this trip (or identity not yet linked) — ask who they are
     showWhoModal(false);
   }
 }
@@ -1017,6 +1067,41 @@ function loadTripData(data) {
 // ══════════════════════════════════════════════════
 // WHO-AM-I MODAL
 // ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// INVALID CODE / TRIP NOT FOUND SCREEN
+// ══════════════════════════════════════════════════
+function showInvalidCodeScreen(code){
+  document.getElementById('invalid-code-display').textContent = code;
+  document.getElementById('invalid-code-screen').style.display = 'flex';
+  document.getElementById('ls').style.display = 'none';
+}
+function startFreshTrip(){
+  // Clear URL hash and localStorage so we get a clean slate
+  history.replaceState(null, '', location.pathname);
+  localStorage.removeItem('campTripCode');
+  TRIP_CODE = null;
+  document.getElementById('invalid-code-screen').style.display = 'none';
+  renderFamBuilder();
+  document.getElementById('setup').style.display = 'flex';
+}
+function retryCode(){
+  // Prompt the user to paste a correct link / code
+  const input = window.prompt('Paste the full trip link or just the trip code:');
+  if(!input) return;
+  // Extract code from a full URL or treat input as bare code
+  let code = input.trim().toUpperCase();
+  const hashMatch = code.match(/#([A-Z0-9]{4,10})$/);
+  if(hashMatch) code = hashMatch[1];
+  if(/^[A-Z0-9]{4,10}$/.test(code)){
+    document.getElementById('invalid-code-screen').style.display = 'none';
+    window.location.hash = code;
+    // Re-trigger auth routing with the new hash
+    routeAfterAuth(fbAuth.currentUser);
+  } else {
+    toastWarn('That doesn't look like a valid trip code. Try copying the full link.');
+  }
+}
+
 function showWhoModal(allowClose) {
   const allMembers = families.flatMap(f=>f.members);
   document.getElementById('who-trip-name').textContent = trip.tripName ? '✈️ ' + trip.tripName : '';
