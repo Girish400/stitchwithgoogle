@@ -1,4 +1,3 @@
-web application/stitch/projects/18296298041899879691/screens/15988309187801887719
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +10,7 @@ web application/stitch/projects/18296298041899879691/screens/1598830918780188771
   --forest:#2a5c3f;--forest2:#3a7a56;--forest3:#e8f5ee;
   --cream:#faf7f0;--paper:#f3efe4;--ink:#1e1a14;--muted:#7a7060;
   --border:#ddd8cc;--white:#fff;--red:#c0392b;--locked:#8b5e3c;
+  --sky:#2a72a8;  /* ✅ FIX 2: --sky was used but never defined */
   --sh:0 2px 12px rgba(42,92,63,.10);--sh2:0 4px 24px rgba(42,92,63,.15);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -162,7 +162,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .item-base:last-child{border-bottom:none;}
 .item-main-row{display:grid;grid-template-columns:20px 1fr auto auto;gap:8px;align-items:center;padding:9px 15px;transition:background .12s;}
 .item-main-row:hover{background:#faf9f5;}
-/* checked items do NOT strikethrough — only N/A items do */
 
 /* checkbox */
 .chk-box{width:17px;height:17px;border-radius:4px;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer;position:relative;}
@@ -177,11 +176,10 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .mode-tag.rv{background:#ddeeff;color:#185fa5;}
 .mode-tag.tent{background:#e2f0e8;color:var(--forest);}
 
-/* right-side cell of item row — holds resp-badge AND optional lock */
+/* right-side cell of item row */
 .item-right{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
 .resp-cycle{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;white-space:nowrap;cursor:pointer;border:1px solid transparent;transition:all .18s;user-select:none;}
 .resp-cycle:hover{opacity:.8;transform:scale(1.05);}
-
 .resp-cycle.shared{background:#e8f5ee;color:var(--forest);border-color:#a8d4b8;}
 .resp-cycle.family{background:#fff3cd;color:#7a5400;border-color:#ffc107;}
 .resp-cycle.person{background:#e8eeff;color:#2233aa;border-color:#99aaff;}
@@ -201,7 +199,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .expand-header{padding:5px 15px 3px 46px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);}
 .expand-row{display:grid;grid-template-columns:17px 1fr auto auto;gap:8px;align-items:center;padding:7px 15px 7px 46px;border-top:1px solid #f5f3ee;transition:background .12s;}
 .expand-row:hover{background:#f0ede5;}
-/* expand-row checked = no strikethrough */
 .exp-chk{width:15px;height:15px;border-radius:3px;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer;}
 .exp-chk.checked{background:var(--forest2);border-color:var(--forest2);}
 .exp-chk.locked{background:var(--locked);border-color:var(--locked);cursor:not-allowed;}
@@ -267,7 +264,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 #toast.show{transform:translateX(-50%) translateY(0);}
 #toast.warn{background:var(--locked);}
 
-
 /* ═══ AUTH SCREEN ═══ */
 #auth-screen{min-height:100vh;display:none;align-items:center;justify-content:center;padding:2rem 1rem;
   background:var(--cream);background-image:radial-gradient(ellipse at 20% 0%,#c8e6d4,transparent 55%),radial-gradient(ellipse at 80% 100%,#d4e8d4,transparent 55%);}
@@ -313,10 +309,9 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 /* ls sub-label */
 #ls .ls-sub{font-size:12px;opacity:.5;letter-spacing:1.5px;margin-top:-8px;}
 
-
 /* ═══ TRIP PLANNER ═══ */
 .trip-day-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh);}
-.trip-day-head{background:var(--sky);color:#fff;padding:10px 17px;display:flex;align-items:center;gap:10px;}
+.trip-day-head{background:var(--sky);color:#fff;padding:10px 17px;display:flex;align-items:center;gap:10px;}  /* ✅ FIX 2: --sky now defined */
 .trip-day-head h3{font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;flex:1;}
 .trip-day-head .tddt{font-size:11px;opacity:.75;font-style:italic;font-family:'Playfair Display',serif;}
 .trip-act-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
@@ -385,7 +380,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
   <div class="ls-code" id="ls-code"></div>
 </div>
 
-
 <!-- ═══ AUTH SCREEN ═══ -->
 <div id="auth-screen">
   <div class="auth-card">
@@ -395,7 +389,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
       <p>Sign in once — stay logged in forever on this device</p>
     </div>
     <div class="auth-body">
-      <!-- Shown when user is already signed into Firebase but hasn't linked a name yet -->
       <div id="auth-already-signed-in" style="display:none">
         <div class="auth-already" id="auth-already-row">
           <div class="auth-already-avatar" id="auth-already-avatar">?</div>
@@ -407,7 +400,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
         <button class="auth-continue-btn" onclick="continueAsSignedInUser()">Continue →</button>
         <button class="auth-notme-btn" onclick="signOut()">Not me — sign out</button>
       </div>
-      <!-- Shown when user is not signed in -->
       <div id="auth-sign-in-panel">
         <h2>Welcome 👋</h2>
         <p class="auth-sub">Sign in once with Google or your email. You'll be recognised automatically every time you return to this trip — on any device.</p>
@@ -422,7 +414,6 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
         </button>
         <div class="auth-divider"><span>or</span></div>
         <button class="auth-btn auth-btn-email" onclick="showEmailForm()">✉️ Continue with Email Link</button>
-        <!-- Email magic link form (hidden until button above is clicked) -->
         <div class="auth-email-form" id="auth-email-form">
           <input class="auth-email-inp" type="email" id="auth-email-inp" placeholder="your@email.com"
                  onkeydown="if(event.key==='Enter')sendEmailLink()"/>
@@ -631,38 +622,30 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 
 <div id="toast"></div>
 
-<!-- Firebase SDK loaded here so it is ready before our script runs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
 // ⚠️  CONFIGURATION — REPLACE WITH YOUR ACTUAL VALUES
-//     Firebase Console → Project Settings → Your apps
 // ═══════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",              // ← paste your apiKey here
+  apiKey:            "YOUR_API_KEY",
   authDomain:        "camping-5e1c6.firebaseapp.com",
   databaseURL:       "https://camping-5e1c6-default-rtdb.firebaseio.com",
   projectId:         "camping-5e1c6",
   storageBucket:     "camping-5e1c6.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",            // ← paste here
-  appId:             "YOUR_APP_ID",               // ← paste here
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID",
 };
 
-// Authorised domain for email links — set to your GitHub Pages URL
-// e.g. "yourusername.github.io"  or your custom domain
-const EMAIL_LINK_URL = window.location.href;      // uses current page automatically
+const EMAIL_LINK_URL = window.location.href;
 
-// ═══════════════════════════════════════════════════════
-// FIREBASE INIT
-// ═══════════════════════════════════════════════════════
 firebase.initializeApp(FIREBASE_CONFIG);
 const fbAuth = firebase.auth();
-// LOCAL persistence = survives page refresh AND browser restarts forever
 fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ═══════════════════════════════════════════════════════
-// FIREBASE REST API — no SDK for Realtime DB, plain fetch
+// FIREBASE REST API
 // ═══════════════════════════════════════════════════════
 const FB_ROOT = 'https://camping-5e1c6-default-rtdb.firebaseio.com';
 
@@ -680,15 +663,14 @@ async function fbPatch(tripCode, path, val) {
 }
 
 // ══════════════════════════════════════════════════
-// TRIP CODE  — read from URL hash or generate new
+// TRIP CODE
 // ══════════════════════════════════════════════════
 function getTripCodeFromURL() {
   const h = window.location.hash.replace('#','').trim().toUpperCase();
-  // valid code: 4-8 alphanumeric chars
   return /^[A-Z0-9]{4,10}$/.test(h) ? h : null;
 }
 function generateTripCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0,O,1,I to avoid confusion
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
   return code;
@@ -698,7 +680,7 @@ function getShareURL(code) {
 }
 
 // ══════════════════════════════════════════════════
-// KEY HELPERS (Firebase-safe encoding)
+// KEY HELPERS
 // ══════════════════════════════════════════════════
 function safeKey(s) {
   return btoa(encodeURIComponent(s)).replace(/[^A-Za-z0-9]/g,'_');
@@ -873,13 +855,41 @@ let currentUser= null;
 let cMode='all', srch='';
 let catOpen={};
 let RF={shared:true,family:true,person:true};
-let respMenuTargetData=null;
+let respMenuTargetData2=null;
 let setupFamilies=[{name:'Family 1',members:[]}];
+let showNA=true; // ✅ FIX 3: moved to module scope (was declared inside toggleNAFilter)
+
+// ═══════════════════════════════════════
+// DATE CONSTRAINTS  ← ✅ FIX 1: DEFINED HERE, before it's called
+// ═══════════════════════════════════════
+function initDateConstraints(){
+  const today = todayStr();
+  const stEl  = document.getElementById('s-st');
+  const enEl  = document.getElementById('s-en');
+  if(stEl) stEl.min = today;
+  if(enEl) enEl.min = today;
+}
+function todayStr(){const d=new Date();return d.toISOString().split('T')[0];}
+function onStartDateChange(){
+  const st=document.getElementById('s-st').value;
+  const enEl=document.getElementById('s-en');
+  const errSt=document.getElementById('err-st');
+  const today=todayStr();
+  if(errSt){if(st&&st<today){document.getElementById('s-st').classList.add('err');errSt.style.display='block';}
+  else{document.getElementById('s-st').classList.remove('err');errSt.style.display='none';}}
+  if(st){enEl.min=st;if(enEl.value&&enEl.value<st)enEl.value=st;}
+}
+function onEndDateChange(){
+  const st=document.getElementById('s-st').value;
+  const en=document.getElementById('s-en').value;
+  const errEn=document.getElementById('err-en');
+  if(errEn){if(st&&en&&en<st){document.getElementById('s-en').classList.add('err');errEn.style.display='block';}
+  else{document.getElementById('s-en').classList.remove('err');errEn.style.display='none';}}
+}
 
 // ═══════════════════════════════════════
 // AUTH FUNCTIONS
 // ═══════════════════════════════════════
-
 function signInGoogle(){
   const provider=new firebase.auth.GoogleAuthProvider();
   fbAuth.signInWithPopup(provider).catch(err=>{
@@ -934,7 +944,6 @@ function renderAuthScreenForUser(user){
 }
 
 async function routeAfterAuth(user){
-  // Handle email magic link redirect
   if(fbAuth.isSignInWithEmailLink(window.location.href)){
     let email=localStorage.getItem('emailForSignIn');
     if(!email) email=window.prompt('Enter your email to confirm sign-in:');
@@ -945,7 +954,7 @@ async function routeAfterAuth(user){
         history.replaceState(null,'',location.pathname+location.hash);
       }catch(err){toastWarn('Link error: '+err.message);}
     }
-    return; // onAuthStateChanged fires again after signIn
+    return;
   }
   if(!user){
     document.getElementById('ls').style.display='none';
@@ -953,7 +962,6 @@ async function routeAfterAuth(user){
     document.getElementById('auth-screen').style.display='flex';
     return;
   }
-  // Signed in — show loading, then route
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('ls').style.display='flex';
   const codeFromURL=getTripCodeFromURL();
@@ -978,7 +986,6 @@ async function routeAfterAuth(user){
   TRIP_CODE=activeCode;
   loadTripData(data);
   localStorage.setItem('campTripCode',TRIP_CODE);
-  // Check uid→name mapping in Firebase
   const identities=data.identities||{};
   const linkedName=identities[user.uid];
   const allMembers=families.flatMap(f=>f.members);
@@ -989,18 +996,19 @@ async function routeAfterAuth(user){
   }
 }
 
-// ─── INIT entry point ───────────────────────────────────────────
+// ─── INIT — ✅ FIX 1: initDateConstraints is now defined above ───
 initDateConstraints();
 fbAuth.onAuthStateChanged(user=>{ routeAfterAuth(user); });
 
 function loadTripData(data) {
-
   trip     = {tripName:data.tripName||'',location:data.location||'',startDate:data.startDate||'',endDate:data.endDate||'',mode:data.mode||'all'};
   families = data.families || [];
   checks   = data.checks   || {};
   meals    = data.meals    || {};
   itinerary= data.itinerary|| {};
-  expenses = data.expenses || [];
+  // ✅ FIX 6: Firebase returns objects for arrays — normalise expenses back to array
+  const rawExp = data.expenses || [];
+  expenses = Array.isArray(rawExp) ? rawExp : Object.values(rawExp);
   notes    = data.notes    || '';
   numDays  = data.numDays  || 3;
 }
@@ -1027,7 +1035,6 @@ function showWhoModal(allowClose) {
 }
 async function selectUser(name) {
   currentUser = name;
-  // Save UID→name in Firebase so this device is recognised on future visits
   const user = fbAuth.currentUser;
   if (user && TRIP_CODE) {
     await fbPatch(TRIP_CODE, '/identities', { [user.uid]: name });
@@ -1063,7 +1070,11 @@ function goStep(n) {
     renderReview();
   }
   document.querySelectorAll('.step-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
-  for(let i=0;i<3;i++) document.getElementById('dot-'+i).className='sd'+(i<n?' done':i===n?' active':'');
+  // ✅ FIX 4: properly update ALL dots when navigating steps
+  for(let i=0;i<3;i++) {
+    const d=document.getElementById('dot-'+i);
+    d.className='sd'+(i<n?' done':i===n?' active':'');
+  }
 }
 function addFamily(){ setupFamilies.push({name:'Family '+(setupFamilies.length+1),members:[]}); renderFamBuilder(); }
 function removeFamily(i){ setupFamilies.splice(i,1); renderFamBuilder(); }
@@ -1113,17 +1124,17 @@ async function launch(){
   const valid=setupFamilies.filter(f=>f.name.trim()&&f.members.length);
   if(!valid.length){ toast('Add at least one family with members'); return; }
 
-  // Generate unique code if not already set
   if (!TRIP_CODE) {
     TRIP_CODE = generateTripCode();
-    // Set hash in URL immediately
     window.location.hash = TRIP_CODE;
   }
 
   trip={tripName:name,location:document.getElementById('s-loc').value,startDate:document.getElementById('s-st').value,endDate:document.getElementById('s-en').value,mode:document.getElementById('s-mode').value};
-  families=valid; checks={}; meals={}; notes=''; numDays=3;
+  // ✅ FIX 5: deep-copy families so future edits don't mutate the saved state
+  families = valid.map(f=>({name:f.name,members:[...f.members]}));
+  checks={}; meals={}; notes=''; numDays=3; expenses=[];
 
-  await fbPut(TRIP_CODE,'',{...trip,families:valid,checks:{},meals:{},itinerary:{},expenses:[],notes:'',numDays:3,createdAt:Date.now()});
+  await fbPut(TRIP_CODE,'',{...trip,families,checks:{},meals:{},itinerary:{},expenses:[],notes:'',numDays:3,createdAt:Date.now()});
   localStorage.setItem('campTripCode', TRIP_CODE);
 
   document.getElementById('setup').style.display='none';
@@ -1135,7 +1146,8 @@ function openSetup(){
   document.getElementById('s-st').value=trip.startDate;
   document.getElementById('s-en').value=trip.endDate;
   document.getElementById('s-mode').value=trip.mode;
-  setupFamilies=families.map(f=>({...f,members:[...f.members]}));
+  // ✅ FIX 5: properly deep copy members array when opening edit
+  setupFamilies=families.map(f=>({name:f.name,members:[...f.members]}));
   renderFamBuilder(); goStep(0);
   document.getElementById('setup').style.display='flex';
 }
@@ -1158,10 +1170,14 @@ function shareTrip(){
 function showApp(){
   document.getElementById('app').style.display='flex';
   document.getElementById('nav-title').textContent=trip.tripName;
-  document.getElementById('nav-loc').textContent=trip.location;
   document.getElementById('nav-code-badge').textContent=TRIP_CODE;
-  if(trip.startDate&&trip.endDate) document.getElementById('nav-dates') && (document.getElementById('nav-loc').textContent=(trip.location?trip.location+' · ':'')+fd(trip.startDate)+' – '+fd(trip.endDate));
-  // Share banner
+  // ✅ FIX 9: nav-dates element doesn't exist — use nav-loc safely
+  const locEl = document.getElementById('nav-loc');
+  if(locEl){
+    let sub = trip.location || '';
+    if(trip.startDate && trip.endDate) sub += (sub ? ' · ' : '') + fd(trip.startDate) + ' – ' + fd(trip.endDate);
+    locEl.textContent = sub;
+  }
   document.getElementById('sb-code').textContent=TRIP_CODE;
   document.getElementById('sb-url').textContent=getShareURL(TRIP_CODE);
   updateNavUser();
@@ -1179,7 +1195,7 @@ function showTab(name,btn){
 }
 
 // ══════════════════════════════════════════════════
-// POLLING (every 8s — reads fresh from Firebase)
+// POLLING (every 8s)
 // ══════════════════════════════════════════════════
 function startPoll(){
   setInterval(async()=>{
@@ -1187,13 +1203,13 @@ function startPoll(){
     const data=await fbGet(TRIP_CODE);
     if(!data) return;
     const prevC=JSON.stringify(checks),prevM=JSON.stringify(meals),prevI=JSON.stringify(itinerary),prevE=JSON.stringify(expenses);
+    const prevDays=numDays;
     loadTripData(data);
     if(JSON.stringify(checks)!==prevC) renderCL();
-    if(JSON.stringify(meals)!==prevM)  renderMeals();
-    if(JSON.stringify(itinerary)!==prevI) renderPlanner();
-    if(JSON.stringify(expenses)!==prevE)  renderCosts();
+    if(JSON.stringify(meals)!==prevM||numDays!==prevDays) { renderMeals(); document.getElementById('days-inp').value=numDays; }
+    if(JSON.stringify(itinerary)!==prevI||numDays!==prevDays) renderPlanner();
+    if(JSON.stringify(expenses)!==prevE) renderCosts();
     document.getElementById('notes-ta').value=notes;
-    document.getElementById('days-inp').value=numDays;
   },8000);
 }
 
@@ -1225,11 +1241,11 @@ function setMode(m,el){ cMode=m; document.querySelectorAll('.mode-pills .pill').
 function setSearch(q){ srch=q.toLowerCase(); renderCL(); }
 function toggleRF(r,el){ RF[r]=!RF[r]; el.classList.toggle('off',!RF[r]); renderCL(); }
 
-
-// ─── N/A item toggle ───────────────────────────────────────────
 function isNA(catId,label){return !!(checks[ck(catId,label)]?.na);}
-let showNA=true;
-function toggleNAFilter(el){showNA=!showNA;el.classList.toggle('off',!showNA);renderCL();}
+
+// ✅ FIX 3: showNA is now module-scoped (declared in STATE section above)
+function toggleNAFilter(el){ showNA=!showNA; el.classList.toggle('off',!showNA); renderCL(); }
+
 async function toggleNA(catId,label){
   const k=ck(catId,label),cur=checks[k]||{};
   const nowNA=!cur.na;
@@ -1262,7 +1278,7 @@ async function toggleSub(catId,label,who){
   const k=ck(catId,label), wKey=wk(who);
   const cur=checks[k]||{}, sub=(cur.subChecks||{})[wKey]||{};
   if(sub.checked && sub.checkedBy && sub.checkedBy!==currentUser){
-    toastWarn(`🔒 Locked by ${sub.checkedBy} — only they can uncheck this`); return;
+    toastWarn(`🔒 Locked by ${sub.checkedBy}`); return;
   }
   const now=!sub.checked;
   const newSubs={...(cur.subChecks||{}),[wKey]:{checked:now,checkedBy:now?currentUser:null}};
@@ -1274,9 +1290,6 @@ async function toggleSub(catId,label,who){
   await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
 }
 
-let respMenuTargetData2=null;
-
-// ─── Smart cycle responsibility ───────────────────────────────
 async function cycleResp(catId,label){
   const k=ck(catId,label),cur=checks[k]||{};
   const order=['shared','family','person'];
@@ -1344,7 +1357,7 @@ function filteredItems(cat){
 function renderCL(){
   let tot=0,done=0;
   CATS.forEach(cat=>filteredItems(cat).forEach(item=>{
-    if(isNA(cat.id,item.l)) return; // skip N/A items from progress
+    if(isNA(cat.id,item.l)) return;
     const resp=getResp(cat.id,item.l), k=ck(cat.id,item.l);
     if(resp==='shared'){ tot++; if(checks[k]?.checked) done++; }
     else { const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
@@ -1378,11 +1391,9 @@ function renderCL(){
       const k=ck(cat.id,item.l), st=checks[k]||{}, resp=getResp(cat.id,item.l);
       const base=document.createElement('div'); base.className='item-base';
 
-      // ─ MAIN ROW ─
       const mr=document.createElement('div');
-      mr.className='item-main-row'; // no strikethrough on checked items
+      mr.className='item-main-row';
 
-      // Checkbox appearance
       let cbCls='chk-box';
       if(resp==='shared'){
         if(st.checked) cbCls+= st.checkedBy&&st.checkedBy!==currentUser?' locked':' checked';
@@ -1398,13 +1409,11 @@ function renderCL(){
 
       const na=!!st.na;
       base.className='item-base'+(na?' na-item':'');
-      // Right column: lock chip + resp cycle badge + N/A button
       const rightDiv=document.createElement('div'); rightDiv.className='item-right';
       if(!na&&resp==='shared'&&st.checked&&st.checkedBy){
         const lc=document.createElement('span'); lc.className='lock-chip';
         lc.innerHTML=`🔒 ${st.checkedBy}`; rightDiv.appendChild(lc);
       }
-      // Smart one-click resp cycle badge
       const rb=document.createElement('span');
       rb.className=na?'resp-cycle':'resp-cycle '+resp;
       if(na){rb.style.cssText='background:#f5ede0;color:var(--locked);border:1px solid #e0c9a8;border-radius:9px;font-size:10px;font-weight:700;padding:2px 7px;white-space:nowrap;';}
@@ -1412,7 +1421,6 @@ function renderCL(){
       rb.title='Click to change responsibility';
       if(!na) rb.onclick=(e)=>{ e.stopPropagation(); cycleResp(cat.id,item.l); };
       rightDiv.appendChild(rb);
-      // N/A button
       const naBtn=document.createElement('button');
       naBtn.className='na-btn'+(na?' active':'');
       naBtn.title=na?'Restore this item':'Mark as not needed';
@@ -1427,7 +1435,6 @@ function renderCL(){
       mr.appendChild(rightDiv);
       base.appendChild(mr);
 
-      // ─ EXPAND ROWS ─
       if(resp!=='shared'){
         const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
         const subs=st.subChecks||{};
@@ -1445,8 +1452,6 @@ function renderCL(){
           if(resp==='person'){ const fam=families.find(f=>f.members.includes(entity)); if(fam) famNote=` <span style="font-size:10px;color:var(--muted);">(${fam.name})</span>`; }
 
           const er=document.createElement('div'); er.className='expand-row';
-
-          // expand checkbox
           const echk=document.createElement('div');
           echk.className='exp-chk '+(isDone?(isLocked?'locked':'checked'):'');
           echk.innerHTML='<span class="exp-chk-mark">✓</span>';
@@ -1455,11 +1460,7 @@ function renderCL(){
             if(isLocked){ toastWarn(`🔒 Locked by ${sub.checkedBy}`); return; }
             toggleSub(cat.id,item.l,entity);
           };
-
-          // label
           const lbl=document.createElement('span'); lbl.className='expand-lbl'; lbl.innerHTML=entity+famNote;
-
-          // right: lock chip or tag
           const right=document.createElement('span');
           if(isDone&&sub.checkedBy){
             right.className='sub-lock-chip'; right.innerHTML=`🔒 ${sub.checkedBy}`;
@@ -1467,7 +1468,6 @@ function renderCL(){
             right.className=`exp-who-tag ${resp==='family'?'f':'p'}`;
             right.textContent=resp==='family'?'Family':'Person';
           }
-
           er.appendChild(echk); er.appendChild(lbl); er.appendChild(right);
           expand.appendChild(er);
         });
@@ -1489,7 +1489,7 @@ function renderCL(){
 // ══════════════════════════════════════════════════
 async function saveDays(){
   numDays=Math.max(1,parseInt(document.getElementById('days-inp').value)||3);
-  await fbPatch(TRIP_CODE,'',{numDays}); renderMeals();
+  await fbPatch(TRIP_CODE,'',{numDays}); renderMeals(); renderPlanner();
 }
 async function addMealItem(day,mk,iid){
   const inp=document.getElementById(iid),val=inp.value.trim(); if(!val) return;
@@ -1539,29 +1539,6 @@ function renderMeals(){
     card.appendChild(grid); wrap.appendChild(card);
   }
 }
-
-
-// ═══════════════════════════════════════
-// DATE VALIDATION
-// ═══════════════════════════════════════
-function todayStr(){const d=new Date();return d.toISOString().split('T')[0];}
-function onStartDateChange(){
-  const st=document.getElementById('s-st').value;
-  const enEl=document.getElementById('s-en');
-  const errSt=document.getElementById('err-st');
-  const today=todayStr();
-  if(errSt){if(st&&st<today){document.getElementById('s-st').classList.add('err');errSt.style.display='block';}
-  else{document.getElementById('s-st').classList.remove('err');errSt.style.display='none';}}
-  if(st){enEl.min=st;if(enEl.value&&enEl.value<st)enEl.value=st;}
-}
-function onEndDateChange(){
-  const st=document.getElementById('s-st').value;
-  const en=document.getElementById('s-en').value;
-  const errEn=document.getElementById('err-en');
-  if(errEn){if(st&&en&&en<st){document.getElementById('s-en').classList.add('err');errEn.style.display='block';}
-  else{document.getElementById('s-en').classList.remove('err');errEn.style.display='none';}}
-}
-
 
 // ═══════════════════════════════════════
 // TRIP PLANNER
@@ -1626,13 +1603,16 @@ function renderPlanner(){
   }
 }
 
-
 // ═══════════════════════════════════════
 // COST SHEET
 // ═══════════════════════════════════════
 function populateCostPayer(){
   const sel=document.getElementById('cost-payer');if(!sel)return;
-  sel.innerHTML=families.flatMap(f=>f.members).map(n=>`<option value="${esc(n)}">${n}</option>`).join('');
+  const allM=families.flatMap(f=>f.members);
+  if(!allM.length) return;
+  // ✅ FIX 7: preserve current selection when re-rendering
+  const current=sel.value;
+  sel.innerHTML=allM.map(n=>`<option value="${esc(n)}" ${n===current?'selected':''}>${n}</option>`).join('');
 }
 async function addExpense(){
   const desc=document.getElementById('cost-desc').value.trim();
@@ -1643,10 +1623,14 @@ async function addExpense(){
   if(!desc||isNaN(amt)||amt<=0){toast('Enter description and a valid amount');return;}
   expenses.push({id:Date.now(),desc,amount:amt,payer,category:cat,split});
   document.getElementById('cost-desc').value='';document.getElementById('cost-amt').value='';
-  renderCosts();await fbPut(TRIP_CODE,'/expenses',expenses);
+  renderCosts();
+  // ✅ FIX 6: use fbPut safely — expenses is always an array here
+  await fbPut(TRIP_CODE,'/expenses',expenses);
 }
 async function removeExpense(id){
-  expenses=expenses.filter(e=>e.id!==id);renderCosts();await fbPut(TRIP_CODE,'/expenses',expenses);
+  expenses=expenses.filter(e=>e.id!==id);
+  renderCosts();
+  await fbPut(TRIP_CODE,'/expenses',expenses);
 }
 function computeBalances(){
   const allM=families.flatMap(f=>f.members);
