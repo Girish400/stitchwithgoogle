@@ -629,14 +629,15 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 // ⚠️  CONFIGURATION — REPLACE WITH YOUR ACTUAL VALUES
 // ═══════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "camping-5e1c6.firebaseapp.com",
-  databaseURL:       "https://camping-5e1c6-default-rtdb.firebaseio.com",
-  projectId:         "camping-5e1c6",
-  storageBucket:     "camping-5e1c6.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID",
+  apiKey: "AIzaSyCWSDf76mUeK6d5nb64nghv4a65z8iKmXk",
+  authDomain: "camp-planner-875b4.firebaseapp.com",
+  projectId: "camp-planner-875b4",
+  storageBucket: "camp-planner-875b4.firebasestorage.app",
+  messagingSenderId: "891401125164",
+  appId: "1:891401125164:web:bfa0fe66f7fc1ebdd60089",
 };
+
+
 
 const EMAIL_LINK_URL = window.location.href;
 
@@ -647,7 +648,7 @@ fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 // ═══════════════════════════════════════════════════════
 // FIREBASE REST API
 // ═══════════════════════════════════════════════════════
-const FB_ROOT = 'https://camping-5e1c6-default-rtdb.firebaseio.com';
+const FB_ROOT = 'https://camp-planner-875b4-default-rtdb.firebaseio.com/';
 
 function fbUrl(tripCode, path='') {
   return `${FB_ROOT}/trips/${tripCode}${path}.json`;
