@@ -2,1788 +2,879 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏕️ Camp Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🏕️ Camp Planner Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --forest:#2a5c3f;--forest2:#3a7a56;--forest3:#e8f5ee;
-  --cream:#faf7f0;--paper:#f3efe4;--ink:#1e1a14;--muted:#7a7060;
-  --border:#ddd8cc;--white:#fff;--red:#c0392b;--locked:#8b5e3c;
-  --sky:#2a72a8;  /* ✅ FIX 2: --sky was used but never defined */
-  --sh:0 2px 12px rgba(42,92,63,.10);--sh2:0 4px 24px rgba(42,92,63,.15);
+:root {
+  /* Modern Color Palette */
+  --forest: #1b4332; --forest2: #2d6a4f; --forest3: #d8f3dc;
+  --bg: #f8f9fa; --paper: #ffffff; --ink: #212529; --muted: #6c757d;
+  --border: #dee2e6; --red: #e63946; --locked: #b0891d; --sky: #023e8a;
+  --sh: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --sh2: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --safe-bottom: env(safe-area-inset-bottom, 16px);
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
-h1,h2,h3{font-family:'Playfair Display',serif;}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; overflow-x: hidden; }
+h1, h2, h3 { font-family: 'Playfair Display', serif; }
+input, select, textarea, button { font-family: 'Inter', sans-serif; -webkit-appearance: none; }
 
 /* ── LOADING ── */
-#ls{position:fixed;inset:0;background:var(--forest);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;gap:14px;}
-.ls-icon{font-size:52px;}
-.spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;}
-@keyframes sp{to{transform:rotate(360deg);}}
-#ls p{font-family:'Playfair Display',serif;font-size:17px;opacity:.8;}
-#ls .ls-code{font-size:12px;opacity:.5;letter-spacing:2px;margin-top:-6px;}
+#ls { position: fixed; inset: 0; background: var(--forest); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: #fff; gap: 16px; transition: opacity 0.3s; }
+.spin { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: sp 0.8s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
 
-/* ── WHO-AM-I MODAL ── */
-#who-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:8000;padding:1rem;}
-#who-modal.show{display:flex;}
-.who-card{background:var(--white);border-radius:18px;box-shadow:var(--sh2);max-width:420px;width:100%;padding:2rem;}
-.who-card h2{font-size:22px;margin-bottom:.4rem;}
-.who-card .who-trip{font-size:14px;color:var(--forest);font-weight:700;margin-bottom:.3rem;}
-.who-card p{font-size:13px;color:var(--muted);margin-bottom:1.3rem;font-family:'Nunito',sans-serif;}
-.who-list{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto;}
-.who-btn{padding:11px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--cream);font-size:14px;font-weight:600;font-family:'Nunito',sans-serif;cursor:pointer;text-align:left;color:var(--ink);transition:all .2s;display:flex;align-items:center;gap:10px;}
-.who-btn:hover{border-color:var(--forest);background:var(--forest3);color:var(--forest);}
-.who-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
-.who-fam{font-size:10px;color:var(--muted);margin-left:auto;background:var(--paper);padding:2px 7px;border-radius:8px;font-weight:600;}
+/* ── BUTTONS & INPUTS ── */
+.btn-primary { background: var(--forest); color: #fff; padding: 12px 20px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; width: 100%; display: inline-block; }
+.btn-primary:active { transform: scale(0.98); background: var(--forest2); }
+.btn-outline { background: transparent; color: var(--muted); border: 2px dashed var(--border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
+.btn-outline:active { border-color: var(--forest); color: var(--forest); background: var(--forest3); }
+input[type="text"], input[type="email"], input[type="number"], input[type="date"], input[type="time"], select, textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 14px; outline: none; transition: 0.2s; }
+input:focus, select:focus, textarea:focus { border-color: var(--forest); box-shadow: 0 0 0 3px var(--forest3); }
 
-/* ── SETUP ── */
-#setup{min-height:100vh;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;
-  background:var(--cream);background-image:radial-gradient(ellipse at 20% 0%,#c8e6d4,transparent 55%),radial-gradient(ellipse at 80% 100%,#d4e8d4,transparent 55%);}
-.setup-card{background:var(--white);border-radius:20px;box-shadow:var(--sh2);max-width:600px;width:100%;overflow:hidden;margin:auto;}
-.setup-hero{background:var(--forest);padding:2rem;text-align:center;position:relative;overflow:hidden;}
-.setup-hero::before{content:'';position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='2' fill='%23fff'/%3E%3C/svg%3E");}
-.setup-hero .bi{font-size:46px;display:block;margin-bottom:10px;position:relative;}
-.setup-hero h1{color:#fff;font-size:25px;margin-bottom:4px;position:relative;}
-.setup-hero p{color:rgba(255,255,255,.72);font-size:13px;position:relative;font-family:'Nunito',sans-serif;}
-.setup-body{padding:1.8rem 2rem 2rem;}
-.step-dots{display:flex;gap:6px;margin-bottom:1.5rem;}
-.sd{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .3s;}
-.sd.done{background:var(--forest);} .sd.active{background:var(--forest2);}
-.step-pane{display:none;} .step-pane.active{display:block;}
-.step-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;gap:7px;}
-.fg{margin-bottom:1.1rem;}
-.fg label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:5px;}
-.fg input,.fg select{width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);outline:none;transition:border .2s;}
-.fg input:focus,.fg select:focus{border-color:var(--forest);}
-.date-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-/* Fam builder */
-.fam-list{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
-.fam-block{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
-.fam-block-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.fam-name-inp{flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);}
-.fam-name-inp:focus{border-color:var(--forest);}
-.fam-del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:17px;line-height:1;padding:0 4px;}
-.fam-del-btn:hover{color:var(--red);}
-.fam-members{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:26px;}
-.mem-chip{display:flex;align-items:center;gap:4px;background:var(--forest3);border:1px solid #a8d4b8;color:var(--forest);padding:3px 9px;border-radius:14px;font-size:12px;font-weight:600;}
-.mem-chip button{background:none;border:none;color:var(--forest2);cursor:pointer;font-size:14px;line-height:1;padding:0;}
-.mem-add-row{display:flex;gap:6px;}
-.mem-inp{flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);}
-.mem-inp:focus{border-color:var(--forest);}
-.mem-add-btn{padding:6px 12px;background:var(--forest3);color:var(--forest);border:1px solid #a8d4b8;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;}
-.add-fam-btn{width:100%;padding:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);border-radius:9px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;margin-bottom:.9rem;}
-.add-fam-btn:hover{border-color:var(--forest);color:var(--forest);}
-.step-nav{display:flex;gap:10px;margin-top:1.3rem;}
-.btn-back{flex:1;padding:10px;border:1.5px solid var(--border);background:var(--white);color:var(--muted);border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;}
-.btn-next{flex:2;padding:10px;background:var(--forest);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;}
-.btn-next:hover{background:var(--forest2);}
+/* ── MODALS & CARDS ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 8000; padding: 16px; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.card { background: var(--paper); border-radius: 20px; box-shadow: var(--sh2); width: 100%; max-width: 480px; padding: 24px; overflow: hidden; }
 
-/* ── MAIN APP ── */
-#app{display:none;flex-direction:column;min-height:100vh;}
-.tnav{background:var(--forest);color:#fff;padding:0 1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.2);position:sticky;top:0;z-index:100;}
-.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:8px;height:54px;}
-.nav-title-wrap{flex:1;min-width:0;}
-.nav-title{font-family:'Playfair Display',serif;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.nav-sub{font-size:10px;opacity:.6;white-space:nowrap;}
-.nav-code-badge{font-size:10px;font-weight:700;letter-spacing:1.5px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:10px;white-space:nowrap;font-family:'Nunito',sans-serif;}
-.nav-user{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);padding:4px 9px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
-.nav-user:hover{background:rgba(255,255,255,.28);}
-.nav-user-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
-.nav-icon-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Nunito',sans-serif;transition:background .2s;}
-.nav-icon-btn:hover{background:rgba(255,255,255,.28);}
-.tbar{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:54px;z-index:99;}
-.tab-inner{max-width:1100px;margin:0 auto;display:flex;overflow-x:auto;}
-.tab-btn{padding:12px 16px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:'Nunito',sans-serif;transition:all .2s;}
-.tab-btn.active{color:var(--forest);border-bottom-color:var(--forest);}
-.tab-btn:hover:not(.active){color:var(--forest2);}
-.content{max-width:1100px;margin:0 auto;padding:1.4rem 1rem 4rem;width:100%;}
-.tab-pane{display:none;} .tab-pane.active{display:block;}
-.sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap;}
-.sec-head h2{font-size:21px;}
-.sh-sub{font-size:12px;color:var(--muted);}
+/* ── AUTH & SETUP SCREENS ── */
+.screen { min-height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+.screen.active { display: flex; }
+.hero-header { background: var(--forest); margin: -24px -24px 24px -24px; padding: 32px 24px; text-align: center; color: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+.hero-header h1 { font-size: 28px; margin-bottom: 8px; }
+.auth-btn-google { background: #fff; border: 1px solid var(--border); color: var(--ink); display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; box-shadow: var(--sh); }
+.auth-btn-google svg { width: 24px; height: 24px; }
 
-/* SHARE BANNER */
-.share-banner{background:var(--forest3);border:1px solid #a8d4b8;border-radius:11px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:1.4rem;flex-wrap:wrap;}
-.share-banner .sb-code{font-size:18px;font-weight:700;letter-spacing:3px;color:var(--forest);font-family:'Playfair Display',serif;}
-.share-banner .sb-url{font-size:11px;color:var(--muted);word-break:break-all;flex:1;min-width:0;}
-.share-banner .sb-copy{padding:7px 14px;background:var(--forest);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;white-space:nowrap;}
-.share-banner .sb-copy:hover{background:var(--forest2);}
+/* ── APP LAYOUT ── */
+#app { display: none; flex-direction: column; min-height: 100vh; padding-bottom: calc(80px + var(--safe-bottom)); }
+.top-nav { background: var(--forest); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--sh); }
+.top-nav .trip-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+.nav-actions { display: flex; gap: 8px; align-items: center; }
+.user-badge { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.icon-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px; border-radius: 10px; cursor: pointer; }
 
-/* TRIP INFO */
-.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:11px;margin-bottom:1.8rem;}
-.ic{background:var(--white);border-radius:12px;padding:1rem;border:1px solid var(--border);box-shadow:var(--sh);}
-.ic-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px;}
-.ic-val{font-size:16px;font-weight:700;color:var(--forest);}
-.ic-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.fov-grid{display:flex;flex-wrap:wrap;gap:11px;}
-.fov-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:11px 15px;box-shadow:var(--sh);min-width:130px;}
-.fov-name{font-size:13px;font-weight:700;color:var(--forest);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
-.fov-mems{display:flex;flex-wrap:wrap;gap:4px;}
-.fov-mem{background:var(--forest3);border:1px solid #a8d4b8;color:var(--forest);padding:2px 7px;border-radius:9px;font-size:11px;font-weight:600;}
+/* Desktop Tabs (Hidden on mobile) */
+.desktop-tabs { display: none; background: var(--paper); border-bottom: 1px solid var(--border); padding: 0 16px; position: sticky; top: 52px; z-index: 99; overflow-x: auto; }
+.tab-btn { padding: 16px; font-weight: 600; color: var(--muted); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+.tab-btn.active { color: var(--forest); border-color: var(--forest); }
 
-/* CHECKLIST */
-.resp-legend{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.2rem;align-items:center;}
-.resp-legend .rl-lbl{font-size:12px;color:var(--muted);font-weight:700;}
-.rp{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:13px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;user-select:none;}
-.rp.off{opacity:.32;}
-.rp.s{border-color:#a8d4b8;background:#e8f5ee;color:var(--forest);}
-.rp.f{border-color:#ffc107;background:#fff3cd;color:#7a5400;}
-.rp.p{border-color:#99aaff;background:#e8eeff;color:#2233aa;}
-.cl-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.2rem;align-items:center;}
-.mode-pills{display:flex;gap:6px;flex-wrap:wrap;}
-.pill{padding:6px 14px;border-radius:17px;border:1.5px solid var(--border);background:var(--white);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;}
-.pill.active{background:var(--forest);color:#fff;border-color:var(--forest);}
-.search-inp{flex:1;min-width:150px;padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);}
-.search-inp:focus{border-color:var(--forest);}
-.prog-wrap{margin-bottom:1.2rem;}
-.prog-bg{background:var(--border);border-radius:4px;height:7px;overflow:hidden;}
-.prog-fill{height:100%;background:var(--forest);border-radius:4px;transition:width .4s;}
-.prog-lbl{font-size:12px;color:var(--muted);margin-top:4px;text-align:right;}
+/* Bottom Nav (Mobile) */
+.bottom-nav { display: flex; justify-content: space-around; background: var(--paper); border-top: 1px solid var(--border); position: fixed; bottom: 0; width: 100%; padding-bottom: var(--safe-bottom); z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+.bnav-item { flex: 1; padding: 12px 0; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 600; }
+.bnav-item.active { color: var(--forest); }
+.bnav-icon { font-size: 20px; }
 
-/* CAT CARD */
-.cat-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:10px;box-shadow:var(--sh);}
-.cat-head{display:flex;align-items:center;gap:9px;padding:11px 15px;cursor:pointer;background:var(--paper);border-bottom:1px solid var(--border);user-select:none;}
-.cat-head:hover{background:#edeade;}
-.cat-icon{font-size:18px;width:24px;text-align:center;}
-.cat-title{font-size:14px;font-weight:700;flex:1;}
-.cat-badge{font-size:11px;padding:2px 8px;border-radius:9px;background:#f0ede5;color:var(--muted);border:1px solid var(--border);font-weight:700;}
-.cat-badge.done{background:#e2f0e8;color:var(--forest);border-color:#a8d4b8;}
-.chk-all-btn{font-size:11px;color:var(--muted);padding:3px 7px;border:1px solid var(--border);border-radius:5px;background:var(--white);cursor:pointer;font-family:'Nunito',sans-serif;}
-.chk-all-btn:hover{color:var(--forest);border-color:var(--forest);}
-.chevron{color:var(--muted);font-size:10px;transition:transform .2s;margin-left:3px;}
-.cat-card.open .chevron{transform:rotate(180deg);}
-.items-wrap{display:none;}
-.cat-card.open .items-wrap{display:block;}
-
-/* ITEM ROW */
-.item-base{border-bottom:1px solid #f0ede5;}
-.item-base:last-child{border-bottom:none;}
-.item-main-row{display:grid;grid-template-columns:20px 1fr auto auto;gap:8px;align-items:center;padding:9px 15px;transition:background .12s;}
-.item-main-row:hover{background:#faf9f5;}
-
-/* checkbox */
-.chk-box{width:17px;height:17px;border-radius:4px;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer;position:relative;}
-.chk-box.checked{background:var(--forest);border-color:var(--forest);}
-.chk-box.locked{background:var(--locked);border-color:var(--locked);cursor:not-allowed;}
-.chk-box.partial{background:#a8d4b8;border-color:var(--forest2);cursor:default;}
-.chk-mark{color:#fff;font-size:10px;opacity:0;transition:opacity .15s;}
-.chk-box.checked .chk-mark,.chk-box.locked .chk-mark,.chk-box.partial .chk-mark{opacity:1;}
-
-.item-text{font-size:13px;line-height:1.3;}
-.mode-tag{font-size:10px;padding:2px 5px;border-radius:3px;font-weight:700;white-space:nowrap;}
-.mode-tag.rv{background:#ddeeff;color:#185fa5;}
-.mode-tag.tent{background:#e2f0e8;color:var(--forest);}
-
-/* right-side cell of item row */
-.item-right{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
-.resp-cycle{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;white-space:nowrap;cursor:pointer;border:1px solid transparent;transition:all .18s;user-select:none;}
-.resp-cycle:hover{opacity:.8;transform:scale(1.05);}
-.resp-cycle.shared{background:#e8f5ee;color:var(--forest);border-color:#a8d4b8;}
-.resp-cycle.family{background:#fff3cd;color:#7a5400;border-color:#ffc107;}
-.resp-cycle.person{background:#e8eeff;color:#2233aa;border-color:#99aaff;}
-
-/* lock chip shown on checked shared items */
-.lock-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;background:#f5ede0;color:var(--locked);border:1px solid #e0c9a8;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;}
-
-/* N/A ITEM */
-.item-base.na-item .item-text{color:#bbb !important;text-decoration:line-through !important;}
-.item-base.na-item .item-main-row{opacity:.55;}
-.na-btn{font-size:10px;background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 5px;border-radius:4px;transition:all .2s;white-space:nowrap;}
-.na-btn:hover{background:#f5ede0;color:var(--red);}
-.na-btn.active{color:var(--red);font-weight:700;}
-
-/* EXPAND ROWS */
-.expand-rows{background:#fafaf6;}
-.expand-header{padding:5px 15px 3px 46px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);}
-.expand-row{display:grid;grid-template-columns:17px 1fr auto auto;gap:8px;align-items:center;padding:7px 15px 7px 46px;border-top:1px solid #f5f3ee;transition:background .12s;}
-.expand-row:hover{background:#f0ede5;}
-.exp-chk{width:15px;height:15px;border-radius:3px;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer;}
-.exp-chk.checked{background:var(--forest2);border-color:var(--forest2);}
-.exp-chk.locked{background:var(--locked);border-color:var(--locked);cursor:not-allowed;}
-.exp-chk-mark{color:#fff;font-size:9px;opacity:0;transition:opacity .15s;}
-.exp-chk.checked .exp-chk-mark,.exp-chk.locked .exp-chk-mark{opacity:1;}
-.expand-lbl{font-size:12px;}
-.exp-who-tag{font-size:10px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap;}
-.exp-who-tag.f{background:#fff3cd;color:#7a5400;}
-.exp-who-tag.p{background:#e8eeff;color:#2233aa;}
-.sub-lock-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:7px;background:#f5ede0;color:var(--locked);border:1px solid #e0c9a8;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;}
-.expand-prog{font-size:10px;color:var(--muted);padding:4px 15px 6px 46px;}
-
-/* RESP MENU */
-.resp-menu{position:fixed;background:var(--white);border:1.5px solid var(--border);border-radius:10px;box-shadow:var(--sh2);z-index:500;padding:6px;display:none;min-width:245px;}
-.resp-menu.show{display:block;}
-.resp-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;background:none;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Nunito',sans-serif;font-weight:600;text-align:left;}
-.resp-menu button:hover{background:var(--paper);}
-.rm-sep{height:1px;background:var(--border);margin:4px 0;}
-
-/* MEALS */
-.meal-ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:1.4rem;}
-.meal-ctrl label{font-size:13px;font-weight:700;color:var(--muted);}
-.days-inp{width:65px;padding:7px 9px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Nunito',sans-serif;text-align:center;outline:none;background:var(--white);color:var(--ink);}
-.days-inp:focus{border-color:var(--forest);}
-.meal-day-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:15px;box-shadow:var(--sh);}
-.meal-day-head{background:var(--forest);color:#fff;padding:10px 17px;display:flex;align-items:center;gap:10px;}
-.meal-day-head h3{font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;}
-.meal-day-head .ddt{font-size:11px;opacity:.72;font-style:italic;font-family:'Playfair Display',serif;}
-.meal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));}
-.meal-slot{padding:12px 16px;border-bottom:1px solid #f0ede5;border-right:1px solid #f0ede5;}
-.meal-slot:nth-child(2n){border-right:none;}
-.meal-slot-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.mbadge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:8px;}
-.mb-tea{background:#fff3cd;color:#856404;}.mb-coffee{background:#e8d5c4;color:#5d3a1a;}
-.mb-breakfast{background:#d4edda;color:#155724;}.mb-lunch{background:#cce5ff;color:#004085;}
-.mb-snacks{background:#fff0d4;color:#7a4f00;}.mb-dinner{background:#f0d4ff;color:#4a0072;}
-.meal-items-list{display:flex;flex-direction:column;gap:4px;margin-bottom:7px;}
-.meal-item{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--paper);border-radius:5px;font-size:12px;}
-.meal-item span{flex:1;}
-.meal-item button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;line-height:1;}
-.meal-item button:hover{color:var(--red);}
-.meal-add-row{display:flex;gap:6px;margin-bottom:7px;}
-.meal-add-inp{flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);}
-.meal-add-inp:focus{border-color:var(--forest);}
-.meal-add-btn{padding:6px 10px;background:var(--forest);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;}
-.meal-add-btn:hover{background:var(--forest2);}
-.meal-cook-row{display:flex;align-items:center;gap:6px;}
-.meal-cook-row label{font-size:11px;color:var(--muted);white-space:nowrap;}
-.meal-cook-sel{flex:1;padding:4px 7px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'Nunito',sans-serif;background:var(--cream);outline:none;color:var(--ink);}
-.meal-cook-sel.asgn{background:#e2f0e8;border-color:#a8d4b8;color:var(--forest);font-weight:700;}
-
-/* NOTES */
-.notes-area{width:100%;min-height:300px;padding:14px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--white);color:var(--ink);resize:vertical;outline:none;line-height:1.7;}
-.notes-area:focus{border-color:var(--forest);}
-.save-notes-btn{margin-top:10px;padding:9px 20px;background:var(--forest);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;}
-.save-notes-btn:hover{background:var(--forest2);}
-
-/* SYNC + TOAST */
-.sync-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;animation:pu 2s infinite;}
-@keyframes pu{0%,100%{opacity:1;}50%{opacity:.3;}}
-#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);background:var(--forest);color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s;pointer-events:none;box-shadow:var(--sh2);max-width:90vw;text-align:center;}
-#toast.show{transform:translateX(-50%) translateY(0);}
-#toast.warn{background:var(--locked);}
-
-/* ═══ AUTH SCREEN ═══ */
-#auth-screen{min-height:100vh;display:none;align-items:center;justify-content:center;padding:2rem 1rem;
-  background:var(--cream);background-image:radial-gradient(ellipse at 20% 0%,#c8e6d4,transparent 55%),radial-gradient(ellipse at 80% 100%,#d4e8d4,transparent 55%);}
-.auth-card{background:var(--white);border-radius:20px;box-shadow:var(--sh2);max-width:440px;width:100%;overflow:hidden;}
-.auth-hero{background:var(--forest);padding:2.2rem 2rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
-.auth-hero::before{content:'';position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='2' fill='%23fff'/%3E%3C/svg%3E");}
-.auth-hero .ah-icon{font-size:48px;display:block;margin-bottom:10px;position:relative;}
-.auth-hero h1{color:#fff;font-size:26px;margin-bottom:5px;position:relative;}
-.auth-hero p{color:rgba(255,255,255,.72);font-size:13px;position:relative;font-family:'Nunito',sans-serif;}
-.auth-body{padding:2rem;}
-.auth-body h2{font-size:20px;margin-bottom:.4rem;}
-.auth-sub{font-size:13px;color:var(--muted);margin-bottom:1.6rem;font-family:'Nunito',sans-serif;line-height:1.6;}
-.auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;margin-bottom:10px;}
-.auth-btn svg{width:20px;height:20px;flex-shrink:0;}
-.auth-btn-google{background:var(--white);border:1.5px solid var(--border);color:var(--ink);}
-.auth-btn-google:hover{border-color:#4285F4;background:#f0f4ff;}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:6px 0 14px;color:var(--muted);font-size:12px;}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.auth-btn-email{background:var(--forest3);border:1.5px solid #a8d4b8;color:var(--forest);}
-.auth-btn-email:hover{background:#d4edda;}
-.auth-email-form{display:none;margin-top:.5rem;}
-.auth-email-form.show{display:block;}
-.auth-email-inp{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);outline:none;margin-bottom:10px;}
-.auth-email-inp:focus{border-color:var(--forest);}
-.auth-email-submit{width:100%;padding:11px;background:var(--forest);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;}
-.auth-email-submit:hover{background:var(--forest2);}
-.auth-sent-msg{background:#e2f0e8;border:1px solid #a8d4b8;color:var(--forest);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:8px;line-height:1.5;}
-.auth-email-back{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;padding:0;}
-.auth-email-back:hover{color:var(--ink);}
-.auth-already{background:var(--forest3);border:1px solid #a8d4b8;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
-.auth-already-avatar{width:34px;height:34px;border-radius:50%;background:var(--forest);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;}
-.auth-already img{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
-.auth-already-name{font-size:14px;font-weight:700;color:var(--forest);}
-.auth-already-email{font-size:11px;color:var(--muted);}
-.auth-continue-btn{width:100%;padding:11px;background:var(--forest);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:.5rem;}
-.auth-continue-btn:hover{background:var(--forest2);}
-.auth-notme-btn{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;width:100%;text-align:center;padding:4px;}
-.auth-notme-btn:hover{color:var(--red);}
-.auth-footer{font-size:11px;color:var(--muted);text-align:center;margin-top:1.2rem;line-height:1.7;}
-/* nav sign-out */
-.nav-signout{background:rgba(255,255,255,.12);border:none;color:rgba(255,255,255,.7);padding:3px 8px;border-radius:5px;font-size:11px;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;}
-.nav-signout:hover{background:rgba(255,255,255,.22);color:#fff;}
-/* ls sub-label */
-#ls .ls-sub{font-size:12px;opacity:.5;letter-spacing:1.5px;margin-top:-8px;}
-
-/* ═══ TRIP PLANNER ═══ */
-.trip-day-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh);}
-.trip-day-head{background:var(--sky);color:#fff;padding:10px 17px;display:flex;align-items:center;gap:10px;}  /* ✅ FIX 2: --sky now defined */
-.trip-day-head h3{font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;flex:1;}
-.trip-day-head .tddt{font-size:11px;opacity:.75;font-style:italic;font-family:'Playfair Display',serif;}
-.trip-act-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
-.trip-act-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--border);}
-.trip-act-time{font-size:11px;font-weight:700;color:var(--sky);white-space:nowrap;min-width:46px;padding-top:2px;}
-.trip-act-body{flex:1;}
-.trip-act-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;margin-bottom:2px;}
-.b-travel{background:#ddeeff;color:#185fa5;}.b-activity{background:#e2f0e8;color:var(--forest);}
-.b-food{background:#fff0d4;color:#7a4f00;}.b-rest{background:#f0d4ff;color:#4a0072;}.b-other{background:#f0ede5;color:var(--muted);}
-.trip-act-title{font-size:13px;font-weight:700;}
-.trip-act-note{font-size:12px;color:var(--muted);margin-top:2px;}
-.trip-act-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;}
-.trip-act-del:hover{color:var(--red);}
-.trip-add-form{padding:10px 16px 14px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid #f0ede5;background:#fafaf6;}
-.trip-add-form input,.trip-add-form select,.trip-add-form textarea{padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);}
-.trip-add-form input:focus,.trip-add-form textarea:focus{border-color:var(--sky);}
-.ta-time{width:80px;}.ta-title{flex:1;min-width:140px;}
-.ta-note{width:100%;resize:none;height:44px;}
-.trip-add-btn{padding:7px 14px;background:var(--sky);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;}
-.trip-add-btn:hover{background:#2060a0;}
-
-/* ═══ COST SHEET ═══ */
-.cost-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:1.2rem;}
-.cost-card{background:var(--white);border-radius:12px;padding:.9rem 1rem;border:1px solid var(--border);box-shadow:var(--sh);}
-.cost-card .cc-name{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;}
-.cost-card .cc-amount{font-size:20px;font-weight:700;color:var(--forest);}
-.cost-card .cc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.cost-card.owed .cc-amount{color:var(--red);}
-.cost-card.clear .cc-amount{color:var(--forest2);}
-.cost-add-row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;padding:12px 16px;background:var(--forest3);border-radius:11px;margin-bottom:1.2rem;border:1px solid #a8d4b8;}
-.cost-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--white);border-radius:11px;overflow:hidden;box-shadow:var(--sh);margin-bottom:1.2rem;}
-.cost-table th{background:var(--forest);color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
-.cost-table td{padding:8px 12px;border-bottom:1px solid #f0ede5;vertical-align:middle;}
-.cost-table tr:last-child td{border-bottom:none;}
-.cost-table tr:hover td{background:#faf9f5;}
-.cost-del-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;}
-.cost-del-btn:hover{color:var(--red);}
-.cost-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;}
-.ct-food{background:#fff0d4;color:#7a4f00;}.ct-transport{background:#ddeeff;color:#185fa5;}
-.ct-accommodation{background:#f0d4ff;color:#4a0072;}.ct-activity{background:#e2f0e8;color:var(--forest);}.ct-other{background:#f0ede5;color:var(--muted);}
-.split-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
-.split-chip{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--forest3);color:var(--forest);border:1px solid #a8d4b8;font-weight:600;}
-.cost-settle{background:var(--paper);border-radius:11px;padding:12px 16px;border:1px solid var(--border);}
-.cost-settle h3{font-size:16px;margin-bottom:10px;}
-.settle-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede5;font-size:12px;}
-.settle-row:last-child{border-bottom:none;}
-.settle-arrow{color:var(--muted);}.settle-amount{font-weight:700;color:var(--forest);margin-left:auto;}
-
-@media(max-width:580px){
-  .date-row{grid-template-columns:1fr;}
-  .item-main-row{grid-template-columns:20px 1fr auto;}
-  .mode-tag{display:none;}
-  .meal-grid{grid-template-columns:1fr;}
-  .nav-code-badge{display:none;}
+@media(min-width: 768px) {
+  .bottom-nav { display: none; }
+  .desktop-tabs { display: flex; justify-content: center; gap: 16px; }
+  #app { padding-bottom: 0; }
 }
+
+/* ── TAB CONTENT ── */
+.content-area { max-width: 1000px; margin: 0 auto; padding: 24px 16px; width: 100%; }
+.tab-pane { display: none; animation: fadeIn 0.3s ease; }
+.tab-pane.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Shared Component Styles */
+.sec-head { margin-bottom: 20px; border-bottom: 2px solid var(--forest3); padding-bottom: 8px; }
+.sec-head h2 { font-size: 24px; color: var(--forest); }
+.info-card { background: var(--paper); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--sh); margin-bottom: 16px; display: flex; flex-direction: column; gap: 4px; }
+.info-card label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.info-card .val { font-size: 18px; font-weight: 700; color: var(--ink); }
+
+/* Setup & Families */
+.fam-block { background: var(--bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; margin-bottom: 12px; }
+.mem-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--forest3); color: var(--forest2); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin: 4px; border: 1px solid #a8d4b8; }
+.mem-chip button { background: none; border: none; color: inherit; font-size: 16px; cursor: pointer; padding: 0; }
+
+/* Checklist */
+.cat-card { background: var(--paper); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: var(--sh); overflow: hidden; }
+.cat-head { display: flex; align-items: center; padding: 16px; background: var(--bg); cursor: pointer; user-select: none; font-weight: 600; }
+.cat-head .badge { margin-left: auto; background: var(--border); padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+.cat-head .badge.done { background: var(--forest3); color: var(--forest); }
+.items-wrap { display: none; }
+.cat-card.open .items-wrap { display: block; border-top: 1px solid var(--border); }
+.item-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--bg); gap: 12px; transition: 0.2s; }
+.item-row:hover { background: #fafafa; }
+.chk { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+.chk.checked { background: var(--forest); border-color: var(--forest); }
+.chk.partial { background: #a8d4b8; border-color: var(--forest2); }
+.chk::after { content: '✓'; color: white; font-size: 14px; opacity: 0; }
+.chk.checked::after, .chk.partial::after { opacity: 1; }
+.item-label { flex: 1; font-size: 14px; line-height: 1.4; }
+.resp-tag { font-size: 10px; padding: 4px 8px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.resp-tag.shared { background: #e8f5ee; color: var(--forest); }
+.resp-tag.family { background: #fff3cd; color: #856404; }
+.resp-tag.person { background: #e8eeff; color: #004085; }
+
+/* Cost Sheet & Meals Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--paper); border-radius: 12px; overflow: hidden; box-shadow: var(--sh); }
+th { background: var(--forest); color: white; padding: 12px; text-align: left; }
+td { padding: 12px; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+
+#toast { position: fixed; top: -60px; left: 50%; transform: translateX(-50%); background: var(--forest); color: white; padding: 12px 24px; border-radius: 24px; font-weight: 600; z-index: 10000; transition: 0.3s ease; box-shadow: var(--sh2); }
+#toast.show { top: 20px; }
+#toast.warn { background: var(--red); }
+
+/* Quick Utils */
+.flex { display: flex; gap: 8px; }
+.mt-2 { margin-top: 8px; } .mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 16px; }
 </style>
 </head>
 <body>
 
 <!-- LOADING -->
 <div id="ls">
-  <span class="ls-icon">🏕️</span>
-  <p id="ls-msg">Loading Camp Planner…</p>
+  <span style="font-size: 48px;">🏕️</span>
+  <h2>Loading Camp Planner...</h2>
   <div class="spin"></div>
-  <div class="ls-sub" id="ls-sub"></div>
-  <div class="ls-code" id="ls-code"></div>
 </div>
 
-<!-- ═══ AUTH SCREEN ═══ -->
-<div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-hero">
-      <span class="ah-icon">🏕️</span>
+<!-- TOAST -->
+<div id="toast">Message</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="screen">
+  <div class="card">
+    <div class="hero-header">
+      <span style="font-size: 48px; display: block; margin-bottom: 8px;">🏕️</span>
       <h1>Camp Planner</h1>
-      <p>Sign in once — stay logged in forever on this device</p>
+      <p style="opacity: 0.8; font-size: 14px;">Log in once, stay synced forever.</p>
     </div>
-    <div class="auth-body">
-      <div id="auth-already-signed-in" style="display:none">
-        <div class="auth-already" id="auth-already-row">
-          <div class="auth-already-avatar" id="auth-already-avatar">?</div>
-          <div>
-            <div class="auth-already-name" id="auth-already-name">—</div>
-            <div class="auth-already-email" id="auth-already-email">—</div>
-          </div>
-        </div>
-        <button class="auth-continue-btn" onclick="continueAsSignedInUser()">Continue →</button>
-        <button class="auth-notme-btn" onclick="signOut()">Not me — sign out</button>
-      </div>
-      <div id="auth-sign-in-panel">
-        <h2>Welcome 👋</h2>
-        <p class="auth-sub">Sign in once with Google or your email. You'll be recognised automatically every time you return to this trip — on any device.</p>
-        <button class="auth-btn auth-btn-google" onclick="signInGoogle()">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          Continue with Google
-        </button>
-        <div class="auth-divider"><span>or</span></div>
-        <button class="auth-btn auth-btn-email" onclick="showEmailForm()">✉️ Continue with Email Link</button>
-        <div class="auth-email-form" id="auth-email-form">
-          <input class="auth-email-inp" type="email" id="auth-email-inp" placeholder="your@email.com"
-                 onkeydown="if(event.key==='Enter')sendEmailLink()"/>
-          <button class="auth-email-submit" onclick="sendEmailLink()">📧 Send Magic Link</button>
-          <div class="auth-sent-msg" id="auth-sent-msg" style="display:none">
-            ✅ Check your inbox! Click the link to sign in — it works on any device.
-          </div>
-          <button class="auth-email-back" onclick="hideEmailForm()">← Back to sign-in options</button>
-        </div>
-      </div>
-      <p class="auth-footer">Your sign-in is stored permanently on this device.<br>No password ever needed.</p>
+    
+    <div id="auth-panel">
+      <h2 class="mb-2">Welcome Back 👋</h2>
+      <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">Sign in to access your trips or create a new one. It works seamlessly across all your Apple and Android devices.</p>
+      
+      <!-- Safari Safe Google Login -->
+      <button class="btn-primary auth-btn-google" onclick="signInGoogle()">
+        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+      
+      <div style="text-align: center; margin: 16px 0; color: var(--muted); font-size: 12px;">OR</div>
+      
+      <input type="email" id="auth-email-inp" placeholder="your@email.com" class="mb-2" />
+      <button class="btn-primary" style="background: var(--sky);" onclick="sendEmailLink()">✉️ Send Magic Link</button>
+      <div id="auth-sent-msg" style="display: none; background: var(--forest3); color: var(--forest); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px;">✅ Check your inbox for the login link!</div>
+    </div>
+
+    <div id="auth-returning" style="display:none; text-align: center;">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--forest); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 12px;" id="auth-avatar">?</div>
+      <h3 id="auth-name" class="mb-4">Welcome back</h3>
+      <button class="btn-primary mb-2" onclick="continueAsSignedInUser()">Continue to Trip →</button>
+      <button class="btn-outline" style="border:none;" onclick="signOut()">Not you? Sign out</button>
     </div>
   </div>
 </div>
 
-<!-- WHO-AM-I MODAL -->
-<div id="who-modal">
-  <div class="who-card">
-    <h2>👋 Who are you?</h2>
-    <div class="who-trip" id="who-trip-name"></div>
-    <p>Tap your name. You'll only be able to uncheck items <em>you</em> packed.</p>
-    <div class="who-list" id="who-list"></div>
-  </div>
-</div>
-
-<!-- INVALID CODE SCREEN -->
-<div id="invalid-code-screen" style="display:none;position:fixed;inset:0;background:var(--cream);background-image:radial-gradient(ellipse at 20% 0%,#c8e6d4,transparent 55%),radial-gradient(ellipse at 80% 100%,#d4e8d4,transparent 55%);align-items:center;justify-content:center;padding:2rem 1rem;z-index:7000;">
-  <div style="background:var(--white);border-radius:20px;box-shadow:var(--sh2);max-width:420px;width:100%;overflow:hidden;text-align:center;">
-    <div style="background:var(--forest);padding:2rem;">
-      <div style="font-size:52px;margin-bottom:10px;">🏕️</div>
-      <h1 style="color:#fff;font-size:22px;margin-bottom:6px;">Trip Not Found</h1>
-      <p style="color:rgba(255,255,255,.72);font-size:13px;font-family:'Nunito',sans-serif;">This trip code doesn't match any active trip.</p>
-    </div>
-    <div style="padding:2rem;">
-      <div style="background:#fef3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;margin-bottom:1.4rem;font-size:13px;color:#7a5400;text-align:left;line-height:1.7;">
-        <b>Code used:</b> <span id="invalid-code-display" style="font-family:'Playfair Display',serif;font-size:15px;letter-spacing:2px;color:var(--forest);"></span><br>
-        The trip may have been deleted, or the link may contain a typo.
-      </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:1.4rem;line-height:1.6;">Ask the trip organiser to re-share the link, or start a brand new trip below.</p>
-      <button onclick="startFreshTrip()" style="width:100%;padding:12px;background:var(--forest);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:10px;">🚀 Start a New Trip</button>
-      <button onclick="retryCode()" style="width:100%;padding:10px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;">↩ Try a Different Code</button>
-    </div>
+<!-- WHO ARE YOU MODAL -->
+<div id="who-modal" class="modal-overlay">
+  <div class="card">
+    <h2 class="mb-2">👋 Who are you?</h2>
+    <p style="color:var(--muted); font-size: 14px; margin-bottom: 16px;">Select your name from the group. You'll only be able to uncheck items <em>you</em> packed.</p>
+    <div id="who-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto;"></div>
   </div>
 </div>
 
 <!-- SETUP WIZARD -->
-<div id="setup">
-  <div class="setup-card">
-    <div class="setup-hero">
-      <span class="bi">⛺</span>
-      <h1>Camp Planner</h1>
-      <p>Group camping — for every family, every person</p>
+<div id="setup" class="screen">
+  <div class="card" style="max-width: 600px;">
+    <div class="hero-header">
+      <span style="font-size: 40px; display: block; margin-bottom: 8px;">🚀</span>
+      <h1>Start a New Trip</h1>
     </div>
-    <div class="setup-body">
-      <div class="step-dots"><div class="sd active" id="dot-0"></div><div class="sd" id="dot-1"></div><div class="sd" id="dot-2"></div></div>
-      <!-- Step 0 -->
-      <div class="step-pane active" id="step-0">
-        <div class="step-title"><span>🗓️</span>Trip Details</div>
-        <div class="fg"><label>Trip Name</label><input type="text" id="s-name" placeholder="e.g. Yosemite Family Adventure 2025"/></div>
-        <div class="fg"><label>Campsite / Location</label><input type="text" id="s-loc" placeholder="e.g. Yosemite Valley Campground"/></div>
-        <div class="date-row">
-          <div class="fg"><label>Start Date</label>
-            <input type="date" id="s-st" onchange="onStartDateChange()"/>
-            <div class="err-msg" id="err-st" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Select today or a future date</div>
-          </div>
-          <div class="fg"><label>End Date</label>
-            <input type="date" id="s-en" onchange="onEndDateChange()"/>
-            <div class="err-msg" id="err-en" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">End date must be on or after start date</div>
-          </div>
-        </div>
-        <div class="fg"><label>Camping Mode</label>
-          <select id="s-mode"><option value="all">Both Tent &amp; RV</option><option value="tent">Tent Camping</option><option value="rv">RV Camping</option></select>
-        </div>
-        <div class="step-nav"><button class="btn-next" onclick="goStep(1)">Next: Add Families →</button></div>
+    
+    <div id="step-0" class="setup-step">
+      <h3 class="mb-4">1. Trip Details</h3>
+      <label style="font-size: 12px; font-weight: 600; color: var(--muted);">TRIP NAME</label>
+      <input type="text" id="s-name" placeholder="e.g. Yosemite Adventure" class="mb-4" />
+      <label style="font-size: 12px; font-weight: 600; color: var(--muted);">LOCATION</label>
+      <input type="text" id="s-loc" placeholder="Campsite name" class="mb-4" />
+      <div class="flex mb-4">
+        <div style="flex:1;"><label style="font-size: 12px; font-weight: 600; color: var(--muted);">START</label><input type="date" id="s-st" /></div>
+        <div style="flex:1;"><label style="font-size: 12px; font-weight: 600; color: var(--muted);">END</label><input type="date" id="s-en" /></div>
       </div>
-      <!-- Step 1 -->
-      <div class="step-pane" id="step-1">
-        <div class="step-title"><span>👨‍👩‍👧</span>Families &amp; Members</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Add each family and their members. Items can be assigned per family or per person.</p>
-        <div class="fam-list" id="fam-list"></div>
-        <button class="add-fam-btn" onclick="addFamily()">+ Add Another Family</button>
-        <div class="step-nav">
-          <button class="btn-back" onclick="goStep(0)">← Back</button>
-          <button class="btn-next" onclick="goStep(2)">Next: Review →</button>
-        </div>
-      </div>
-      <!-- Step 2 -->
-      <div class="step-pane" id="step-2">
-        <div class="step-title"><span>✅</span>Review &amp; Launch</div>
-        <div id="review-wrap"></div>
-        <div class="step-nav">
-          <button class="btn-back" onclick="goStep(1)">← Back</button>
-          <button class="btn-next" onclick="launch()">🚀 Start Planning!</button>
-        </div>
+      <button class="btn-primary" onclick="goStep(1)">Next: Add Families →</button>
+    </div>
+
+    <div id="step-1" class="setup-step" style="display: none;">
+      <h3 class="mb-4">2. Families & Group</h3>
+      <div id="fam-list"></div>
+      <button class="btn-outline mb-4" onclick="addFamily()">+ Add Another Family</button>
+      <div class="flex">
+        <button class="btn-outline" style="flex:1;" onclick="goStep(0)">Back</button>
+        <button class="btn-primary" style="flex:2;" onclick="launchTrip()">Create Trip 🚀</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- MAIN APP UI -->
 <div id="app">
-  <nav class="tnav">
-    <div class="nav-inner">
-      <div class="nav-title-wrap">
-        <div class="nav-title" id="nav-title">Camp Planner</div>
-        <div class="nav-sub" id="nav-loc"></div>
+  <nav class="top-nav">
+    <div>
+      <div class="trip-title" id="nav-title">Camp Planner</div>
+      <div style="font-size: 11px; opacity: 0.8;" id="nav-code">Code: ---</div>
+    </div>
+    <div class="nav-actions">
+      <div class="user-badge" onclick="showWhoModal(true)">
+        <span id="nav-user-dot">👤</span> <span id="nav-user-name">Guest</span>
       </div>
-      <span class="nav-code-badge" id="nav-code-badge"></span>
-      <div class="nav-user" id="nav-user" onclick="showWhoModal(true)" title="Switch user">
-        <div class="nav-user-dot" id="nav-user-dot"></div>
-        <span id="nav-user-name">—</span>
-      </div>
-      <button class="nav-icon-btn" onclick="shareTrip()" title="Share link">🔗</button>
-      <button class="nav-icon-btn" onclick="openSetup()" title="Edit trip">✏️</button>
-      <button class="nav-signout" onclick="signOut()" title="Sign out">Sign out</button>
+      <button class="icon-btn" onclick="shareTrip()" title="Share Link">🔗</button>
+      <button class="icon-btn" onclick="signOut()" title="Sign Out">🚪</button>
     </div>
   </nav>
-  <div class="tbar">
-    <div class="tab-inner">
-      <button class="tab-btn active" onclick="showTab('info',this)">🗺️ Trip Info</button>
-      <button class="tab-btn" onclick="showTab('chk',this)">✅ Checklist</button>
-      <button class="tab-btn" onclick="showTab('meals',this)">🍽️ Meals</button>
-      <button class="tab-btn" onclick="showTab('planner',this)">📅 Trip Planner</button>
-      <button class="tab-btn" onclick="showTab('costs',this)">💰 Costs</button>
-      <button class="tab-btn" onclick="showTab('notes',this)">📝 Notes</button>
-    </div>
+
+  <!-- Desktop Tabs -->
+  <div class="desktop-tabs">
+    <button class="tab-btn active" onclick="showTab('info', this)">🗺️ Info</button>
+    <button class="tab-btn" onclick="showTab('chk', this)">✅ Pack</button>
+    <button class="tab-btn" onclick="showTab('meals', this)">🍽️ Meals</button>
+    <button class="tab-btn" onclick="showTab('planner', this)">📅 Plan</button>
+    <button class="tab-btn" onclick="showTab('costs', this)">💰 Costs</button>
+    <button class="tab-btn" onclick="showTab('notes', this)">📝 Notes</button>
   </div>
-  <div class="content">
+
+  <div class="content-area">
+    
     <!-- INFO -->
-    <div class="tab-pane active" id="tab-info">
-      <div class="sec-head"><h2>Trip Overview</h2><span class="sync-badge sh-sub"><span class="sync-dot"></span>Live sync</span></div>
-      <div class="share-banner" id="share-banner">
-        <div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:3px;">Your trip code</div>
-          <div class="sb-code" id="sb-code">—</div>
+    <div id="tab-info" class="tab-pane active">
+      <div class="sec-head"><h2>Trip Overview</h2></div>
+      <div class="info-card" style="background: var(--forest3); border-color: #a8d4b8;">
+        <label style="color: var(--forest);">Share Trip Code</label>
+        <div class="flex" style="align-items: center;">
+          <div class="val" style="font-family: monospace; letter-spacing: 2px; color: var(--forest); font-size: 24px;" id="share-code">---</div>
+          <button class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px; margin-left: auto;" onclick="shareTrip()">Copy Link</button>
         </div>
-        <div class="sb-url" id="sb-url"></div>
-        <button class="sb-copy" onclick="shareTrip()">📋 Copy Link</button>
       </div>
-      <div class="info-grid" id="info-grid"></div>
-      <h3 style="font-size:19px;margin-bottom:1rem;">Our Group</h3>
-      <div class="fov-grid" id="fov-grid"></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;" id="info-grid"></div>
+      
+      <h3>Our Group</h3>
+      <div id="group-grid" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;"></div>
     </div>
+
     <!-- CHECKLIST -->
-    <div class="tab-pane" id="tab-chk">
-      <div class="sec-head"><h2>Packing Checklist</h2></div>
-      <div class="resp-legend">
-        <span class="rl-lbl">Filter:</span>
-        <div class="rp s" id="rp-s" onclick="toggleRF('shared',this)">🟢 Shared</div>
-        <div class="rp f" id="rp-f" onclick="toggleRF('family',this)">🟡 Per Family</div>
-        <div class="rp p" id="rp-p" onclick="toggleRF('person',this)">🔵 Per Person</div>
-        <div class="rp" id="rp-na" onclick="toggleNAFilter(this)" style="border-color:#e0c9a8;background:#f5ede0;color:var(--locked);">✕ N/A</div>
-      </div>
-      <div class="cl-controls">
-        <div class="mode-pills">
-          <button class="pill active" onclick="setMode('all',this)">All</button>
-          <button class="pill" onclick="setMode('tent',this)">⛺ Tent</button>
-          <button class="pill" onclick="setMode('rv',this)">🚌 RV</button>
-        </div>
-        <input class="search-inp" type="text" placeholder="🔍 Search…" oninput="setSearch(this.value)"/>
-      </div>
-      <div class="prog-wrap">
-        <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-        <div class="prog-lbl" id="prog-lbl">Loading…</div>
+    <div id="tab-chk" class="tab-pane">
+      <div class="sec-head"><h2>Checklist</h2></div>
+      <input type="text" id="chk-search" placeholder="🔍 Search items..." oninput="renderCL()" class="mb-4" />
+      <div style="background: var(--border); height: 8px; border-radius: 4px; margin-bottom: 16px; overflow: hidden;">
+        <div id="prog-fill" style="height: 100%; background: var(--forest); width: 0%; transition: width 0.3s;"></div>
       </div>
       <div id="cl-wrap"></div>
     </div>
+
     <!-- MEALS -->
-    <div class="tab-pane" id="tab-meals">
-      <div class="sec-head"><h2>Meal Planner</h2></div>
-      <div class="meal-ctrl"><label>Days:</label><input class="days-inp" type="number" id="days-inp" min="1" max="30" value="3" oninput="saveDays()"/></div>
+    <div id="tab-meals" class="tab-pane">
+      <div class="sec-head flex" style="align-items: center; justify-content: space-between;">
+        <h2>Meals</h2>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size:12px;font-weight:600;">Days:</label>
+          <input type="number" id="days-inp" value="3" min="1" style="width: 60px; padding: 6px;" onchange="updateDays()" />
+        </div>
+      </div>
       <div id="meals-wrap"></div>
     </div>
-    <!-- TRIP PLANNER -->
-    <div class="tab-pane" id="tab-planner">
-      <div class="sec-head"><h2>Trip Planner</h2><span class="sh-sub">Day-by-day itinerary &amp; schedule</span></div>
+
+    <!-- PLANNER -->
+    <div id="tab-planner" class="tab-pane">
+      <div class="sec-head"><h2>Itinerary</h2></div>
       <div id="planner-wrap"></div>
     </div>
+
     <!-- COSTS -->
-    <div class="tab-pane" id="tab-costs">
-      <div class="sec-head"><h2>Cost Sheet</h2><span class="sh-sub">Who paid what — auto split &amp; settle</span></div>
-      <div class="cost-summary" id="cost-summary"></div>
-      <div class="cost-add-row">
-        <div style="flex:2;min-width:150px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--forest);display:block;margin-bottom:4px;">Description</label>
-          <input type="text" id="cost-desc" placeholder="e.g. Groceries at Costco" style="width:100%;padding:8px 10px;border:1.5px solid #a8d4b8;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);"/></div>
-        <div style="width:100px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--forest);display:block;margin-bottom:4px;">Amount ($)</label>
-          <input type="number" id="cost-amt" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:8px 10px;border:1.5px solid #a8d4b8;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);"/></div>
-        <div style="flex:1;min-width:110px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--forest);display:block;margin-bottom:4px;">Paid by</label>
-          <select id="cost-payer" style="width:100%;padding:8px 10px;border:1.5px solid #a8d4b8;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);"></select></div>
-        <div style="flex:1;min-width:110px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--forest);display:block;margin-bottom:4px;">Category</label>
-          <select id="cost-cat" style="width:100%;padding:8px 10px;border:1.5px solid #a8d4b8;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);">
-            <option value="food">🥘 Food</option><option value="transport">🚗 Transport</option>
-            <option value="accommodation">🏕️ Accommodation</option><option value="activity">🎯 Activity</option>
-            <option value="other">📦 Other</option></select></div>
-        <div style="flex:1;min-width:110px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--forest);display:block;margin-bottom:4px;">Split</label>
-          <select id="cost-split" style="width:100%;padding:8px 10px;border:1.5px solid #a8d4b8;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;background:var(--white);outline:none;color:var(--ink);">
-            <option value="all">Everyone equally</option><option value="family">Per Family</option></select></div>
-        <div style="padding-top:18px;"><button onclick="addExpense()" style="padding:9px 18px;background:var(--forest);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;">+ Add</button></div>
+    <div id="tab-costs" class="tab-pane">
+      <div class="sec-head"><h2>Costs & Splits</h2></div>
+      <div class="info-card flex" style="align-items: flex-end; flex-wrap: wrap; background: #fdfaf0;">
+        <div style="flex: 2; min-width: 150px;"><label>Description</label><input type="text" id="c-desc" /></div>
+        <div style="flex: 1; min-width: 100px;"><label>Amount ($)</label><input type="number" id="c-amt" step="0.01" /></div>
+        <div style="flex: 1; min-width: 120px;"><label>Paid By</label><select id="c-payer"></select></div>
+        <button class="btn-primary" style="width: auto; padding: 12px 16px;" onclick="addCost()">+ Add</button>
       </div>
-      <table class="cost-table">
-        <thead><tr><th style="width:28%">Description</th><th style="width:12%">Amount</th>
-          <th style="width:14%">Paid by</th><th style="width:11%">Category</th>
-          <th style="width:29%">Split</th><th style="width:6%"></th></tr></thead>
-        <tbody id="cost-tbody"></tbody>
-      </table>
-      <div class="cost-settle" id="cost-settle"></div>
+      <div id="cost-summary" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;"></div>
+      <div style="overflow-x: auto;">
+        <table id="cost-table">
+          <thead><tr><th>Item</th><th>Cost</th><th>Paid By</th><th></th></tr></thead>
+          <tbody id="cost-tbody"></tbody>
+        </table>
+      </div>
+      <div id="settle-wrap" class="info-card mt-2"></div>
     </div>
 
     <!-- NOTES -->
-    <div class="tab-pane" id="tab-notes">
+    <div id="tab-notes" class="tab-pane">
       <div class="sec-head"><h2>Group Notes</h2></div>
-      <textarea class="notes-area" id="notes-ta" placeholder="Directions, emergency contacts, rules, activity plans…"></textarea>
-      <button class="save-notes-btn" onclick="saveNotes()">💾 Save Notes</button>
+      <textarea id="notes-ta" style="height: 300px; resize: vertical;" class="mb-4" placeholder="Emergency contacts, rules, links..."></textarea>
+      <button class="btn-primary" onclick="saveNotes()">💾 Save Notes</button>
     </div>
+
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="bnav-item active" onclick="showTab('info', this, true)"><span class="bnav-icon">🗺️</span>Info</button>
+    <button class="bnav-item" onclick="showTab('chk', this, true)"><span class="bnav-icon">✅</span>Pack</button>
+    <button class="bnav-item" onclick="showTab('meals', this, true)"><span class="bnav-icon">🍽️</span>Meals</button>
+    <button class="bnav-item" onclick="showTab('planner', this, true)"><span class="bnav-icon">📅</span>Plan</button>
+    <button class="bnav-item" onclick="showTab('costs', this, true)"><span class="bnav-icon">💰</span>Costs</button>
   </div>
 </div>
 
-<!-- RESP CONTEXT MENU -->
-<div class="resp-menu" id="resp-menu">
-  <button onclick="setResp('shared')">🟢 Shared — whole group brings one</button>
-  <button onclick="setResp('family')">🟡 Per Family — each family brings their own</button>
-  <button onclick="setResp('person')">🔵 Per Person — each person brings their own</button>
-  <div class="rm-sep"></div>
-  <button onclick="document.getElementById('resp-menu').classList.remove('show')" style="color:var(--muted);">✕ Cancel</button>
-</div>
-
-<div id="toast"></div>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script>
 // ═══════════════════════════════════════════════════════
-// ⚠️  CONFIGURATION — REPLACE WITH YOUR ACTUAL VALUES
+// FIREBASE SETUP
 // ═══════════════════════════════════════════════════════
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCWSDf76mUeK6d5nb64nghv4a65z8iKmXk",
-    authDomain: "camp-planner-875b4.firebaseapp.com",
-    projectId: "camp-planner-875b4",
-    storageBucket: "camp-planner-875b4.firebasestorage.app",
-    messagingSenderId: "891401125164",
-    appId: "1:891401125164:web:bfa0fe66f7fc1ebdd60089",
-  };
-const EMAIL_LINK_URL = window.location.href;
-
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCWSDf76mUeK6d5nb64nghv4a65z8iKmXk",
+  authDomain: "camp-planner-875b4.firebaseapp.com",
+  projectId: "camp-planner-875b4",
+  storageBucket: "camp-planner-875b4.firebasestorage.app",
+  messagingSenderId: "891401125164",
+  appId: "1:891401125164:web:bfa0fe66f7fc1ebdd60089",
+};
 firebase.initializeApp(FIREBASE_CONFIG);
 const fbAuth = firebase.auth();
 fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-// ═══════════════════════════════════════════════════════
-// FIREBASE REST API
-// ═══════════════════════════════════════════════════════
 const FB_ROOT = 'https://camp-planner-875b4-default-rtdb.firebaseio.com/';
 
-function fbUrl(tripCode, path='') {
-  return `${FB_ROOT}/trips/${tripCode}${path}.json`;
-}
-async function fbGet(tripCode, path='') {
-  try { const r = await fetch(fbUrl(tripCode,path)); return r.ok ? r.json() : null; } catch(e) { return null; }
-}
-async function fbPut(tripCode, path, val) {
-  try { await fetch(fbUrl(tripCode,path), {method:'PUT', body:JSON.stringify(val)}); } catch(e) {}
-}
-async function fbPatch(tripCode, path, val) {
-  try { await fetch(fbUrl(tripCode,path), {method:'PATCH', body:JSON.stringify(val)}); } catch(e) {}
-}
+// Helper Firebase calls
+async function fbGet(code, path='') { try { const r=await fetch(`${FB_ROOT}/trips/${code}${path}.json`); return r.ok?r.json():null; }catch(e){return null;} }
+async function fbPut(code, path, val) { try { await fetch(`${FB_ROOT}/trips/${code}${path}.json`, {method:'PUT',body:JSON.stringify(val)}); }catch(e){} }
+async function fbPatch(code, path, val) { try { await fetch(`${FB_ROOT}/trips/${code}${path}.json`, {method:'PATCH',body:JSON.stringify(val)}); }catch(e){} }
 
-// ══════════════════════════════════════════════════
-// TRIP CODE
-// ══════════════════════════════════════════════════
-function getTripCodeFromURL() {
-  const h = window.location.hash.replace('#','').trim().toUpperCase();
-  return /^[A-Z0-9]{4,10}$/.test(h) ? h : null;
-}
-function generateTripCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
-}
-function getShareURL(code) {
-  return window.location.origin + window.location.pathname + '#' + code;
-}
+// ═══════════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════════
+let TRIP_CODE = null;
+let trip = {}; let families =[]; let checks = {}; let meals = {}; 
+let itinerary = {}; let expenses =[]; let notes = ''; let numDays = 3;
+let currentUser = null; 
+let setupFamilies = [{name:'', members:[]}];
+let catOpen = { shelter: true, fire: true, kitchen: true, food: true }; // defaults
 
-// ══════════════════════════════════════════════════
-// KEY HELPERS
-// ══════════════════════════════════════════════════
-function safeKey(s) {
-  return btoa(encodeURIComponent(s)).replace(/[^A-Za-z0-9]/g,'_');
-}
-function ck(catId, label)      { return catId + '__' + safeKey(label); }
-function wk(who)               { return safeKey(who); }
-
-// ══════════════════════════════════════════════════
-// AVATAR COLOURS
-// ══════════════════════════════════════════════════
-const COLOURS = ['#2a5c3f','#3a7a56','#7c4f2a','#2c6e8a','#c97d1a','#5a3a7a','#7a3a3a','#3a5a7a','#aa4422','#228888'];
-function colourFor(name) {
-  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xFFFF;
-  return COLOURS[h%COLOURS.length];
-}
-
-// ══════════════════════════════════════════════════
-// CHECKLIST DATA
-// ══════════════════════════════════════════════════
-const CATS = [
-  {id:'shelter',name:'Shelter & Camp Setup',icon:'⛺',items:[
-    {l:'Tent / tarp / pop-up tent',m:'tent',resp:'family'},{l:'Tent stakes & guy lines',m:'tent',resp:'family'},
-    {l:'Tent footprint / ground cloth',m:'tent',resp:'family'},{l:'Tent repair kit & seam sealer',m:'tent',resp:'family'},
-    {l:'Mallet for stakes',m:'tent',resp:'family'},{l:'Tarp for shade / rain cover',m:'tent',resp:'family'},
-    {l:'RV leveling blocks',m:'rv',resp:'family'},{l:'RV hitch & ball mount',m:'rv',resp:'family'},
-    {l:'Wheel chocks',m:'rv',resp:'family'},{l:'Stabilizer jacks',m:'rv',resp:'family'},
-    {l:'RV awning & LED string lights',m:'rv',resp:'family'},{l:'Outdoor rug / camp mat',m:'all',resp:'family'},
-    {l:'Camping chairs',m:'all',resp:'family'},{l:'Folding table',m:'all',resp:'shared'},
-    {l:'Table cloth / cover & clips',m:'all',resp:'shared'},{l:'White stool / mug stand',m:'all',resp:'shared'},
-    {l:'S-Hook & hammock',m:'all',resp:'shared'},{l:'Solar lights / dryer rack',m:'all',resp:'shared'},
-    {l:'Twine / clothesline',m:'all',resp:'shared'},{l:'Broom / dustpan',m:'all',resp:'shared'},
-    {l:'Doormat',m:'all',resp:'shared'},
+const CATS =[
+  {id:'shelter',name:'Shelter & Setup',icon:'⛺',items:[
+    {l:'Tent & Stakes', resp:'family'}, {l:'Tarp/Ground cloth', resp:'family'},
+    {l:'Camping chairs', resp:'family'}, {l:'Folding table', resp:'shared'},
+    {l:'Outdoor rug', resp:'shared'}, {l:'RV Leveling blocks', resp:'family'}
   ]},
   {id:'fire',name:'Fire & Power',icon:'🔥',items:[
-    {l:'Charcoal / lighter / grill',m:'all',resp:'shared'},{l:'Firewood / wood axe',m:'tent',resp:'shared'},
-    {l:'Fire starter / kindling',m:'tent',resp:'shared'},{l:'Campfire grill grate',m:'tent',resp:'shared'},
-    {l:'Extension cords / matchsticks',m:'all',resp:'shared'},{l:'Propane canister',m:'all',resp:'shared'},
-    {l:'Gas stove / camp top',m:'all',resp:'shared'},{l:'Power bank & charging cords',m:'all',resp:'person'},
-    {l:'Headlights / flashlights',m:'all',resp:'family'},{l:'Lantern & extra batteries',m:'all',resp:'family'},
-    {l:'RV shore power cord (30/50A)',m:'rv',resp:'family'},{l:'Surge protector for RV',m:'rv',resp:'family'},
-    {l:'RV generator / inverter',m:'rv',resp:'family'},{l:'Fire extinguisher',m:'all',resp:'shared'},
-    {l:'Food warmer',m:'all',resp:'shared'},{l:'Backup lighter',m:'all',resp:'shared'},
+    {l:'Charcoal / Grill', resp:'shared'}, {l:'Firewood', resp:'shared'},
+    {l:'Fire starter / Matches', resp:'shared'}, {l:'Headlights / Lantern', resp:'family'},
+    {l:'Power bank', resp:'person'}, {l:'Extension cords', resp:'shared'}
   ]},
   {id:'kitchen',name:'Kitchen & Cooking',icon:'🍳',items:[
-    {l:'Knife / forks / whisk',m:'all',resp:'shared'},{l:'Big spoon / spatula',m:'all',resp:'shared'},
-    {l:'Skewers / pot holders',m:'all',resp:'shared'},{l:'Skillet / tawa / frying pan',m:'all',resp:'shared'},
-    {l:'Pots / teapot / iron skillet',m:'all',resp:'shared'},{l:'Cutting board & peeler',m:'all',resp:'shared'},
-    {l:'Mixing bowl / blender',m:'all',resp:'shared'},{l:'Big and small tongs',m:'all',resp:'shared'},
-    {l:'Pakkad / strainer',m:'all',resp:'shared'},{l:'Hand toaster',m:'all',resp:'shared'},
-    {l:'Paper dishes / glasses / cups',m:'all',resp:'shared'},{l:'Paper bowls / plastic spoons',m:'all',resp:'shared'},
-    {l:'Paper napkins',m:'all',resp:'shared'},{l:'Dish soap & sponge',m:'all',resp:'shared'},
-    {l:'Ziploc bags (all sizes)',m:'all',resp:'shared'},{l:'Can & bottle opener',m:'all',resp:'shared'},
-    {l:'Food storage containers',m:'all',resp:'shared'},{l:'Aluminum foil',m:'all',resp:'shared'},
-    {l:'Silver serving tray',m:'all',resp:'shared'},{l:'Plastic / trash bags',m:'all',resp:'shared'},
-    {l:'Dish drying rack',m:'rv',resp:'family'},{l:'Camp coffee percolator',m:'tent',resp:'shared'},
-    {l:'Collapsible wash basin',m:'tent',resp:'shared'},{l:'Biodegradable dish soap',m:'tent',resp:'shared'},
-    {l:'Liquid detergent',m:'all',resp:'shared'},
+    {l:'Knife / Spatula / Tongs', resp:'shared'}, {l:'Skillet / Pots', resp:'shared'},
+    {l:'Paper plates & cups', resp:'shared'}, {l:'Trash bags', resp:'shared'},
+    {l:'Dish soap & sponge', resp:'shared'}, {l:'Ziploc bags / Foil', resp:'shared'}
   ]},
   {id:'food',name:'Food & Groceries',icon:'🥘',items:[
-    {l:'Milk / yogurt / paneer',m:'all',resp:'shared'},{l:'Onions / tomatoes',m:'all',resp:'shared'},
-    {l:'Cucumber / asparagus',m:'all',resp:'shared'},{l:'Cilantro / green peppers',m:'all',resp:'shared'},
-    {l:'Sweet corn / potato',m:'all',resp:'shared'},{l:'Lemon / garlic',m:'all',resp:'shared'},
-    {l:'Apple / oranges',m:'all',resp:'shared'},{l:'Strawberry / banana',m:'all',resp:'shared'},
-    {l:'Bread / yeast / maida',m:'all',resp:'shared'},{l:'Rice',m:'all',resp:'shared'},
-    {l:'Chutney / marination',m:'all',resp:'shared'},{l:'Paneer curry',m:'all',resp:'shared'},
-    {l:'Samosas / TJ farsan',m:'all',resp:'shared'},{l:'Biscuits / chips / ketchup',m:'all',resp:'shared'},
-    {l:"S'mores ingredients",m:'tent',resp:'shared'},{l:'Ghee / cumin / mustard seeds',m:'all',resp:'shared'},
-    {l:'Chilli powder / turmeric',m:'all',resp:'shared'},{l:'Chat masala',m:'all',resp:'shared'},
-    {l:'Oil / salt / butter / cheese',m:'all',resp:'shared'},{l:'Sugar / tea powder / tea bags',m:'all',resp:'shared'},
-    {l:'Fennel seeds',m:'all',resp:'shared'},{l:'Hot dogs / sausages',m:'all',resp:'shared'},
-    {l:'Trail mix / granola bars',m:'tent',resp:'person'},{l:'Spice kit / mini containers',m:'all',resp:'shared'},
+    {l:'Oil / Salt / Spices', resp:'shared'}, {l:'Snacks & Trail mix', resp:'person'},
+    {l:'S\'mores ingredients', resp:'shared'}, {l:'Bread / Buns', resp:'shared'},
+    {l:'Coffee / Tea', resp:'shared'}
   ]},
   {id:'water',name:'Water & Cooling',icon:'💧',items:[
-    {l:'Water bottle (personal)',m:'all',resp:'person'},{l:'Thermo cooler / insulated bottle',m:'all',resp:'family'},
-    {l:'Cooler / dry ice / water can',m:'all',resp:'family'},{l:'RubberMaid water cooler',m:'all',resp:'shared'},
-    {l:'Ice packs / dry ice',m:'all',resp:'shared'},{l:'Bucket',m:'all',resp:'shared'},
-    {l:'RV fresh water hose',m:'rv',resp:'family'},{l:'Water pressure regulator',m:'rv',resp:'family'},
-    {l:'RV inline water filter',m:'rv',resp:'family'},{l:'Sewer hose kit',m:'rv',resp:'family'},
-    {l:'RV black tank treatment',m:'rv',resp:'family'},{l:'Water purification tablets',m:'tent',resp:'shared'},
-    {l:'Portable water filter (Sawyer)',m:'tent',resp:'shared'},{l:'Collapsible 5-gal water jug',m:'tent',resp:'family'},
+    {l:'Personal Water bottle', resp:'person'}, {l:'Cooler & Ice packs', resp:'family'},
+    {l:'5-gal Water jug', resp:'shared'}, {l:'Bucket', resp:'shared'}
   ]},
   {id:'sleeping',name:'Sleeping & Bedding',icon:'😴',items:[
-    {l:'Sleeping bag',m:'tent',resp:'person'},{l:'Sleeping bag liner',m:'tent',resp:'person'},
-    {l:'Air mattress & pump',m:'tent',resp:'family'},{l:'Sleeping pad / foam mat',m:'tent',resp:'person'},
-    {l:'Bed sheets / pillows',m:'all',resp:'person'},{l:'Extra blankets',m:'all',resp:'family'},
-    {l:'Shreya sleeping bag',m:'tent',resp:'person'},{l:'Costco bag',m:'all',resp:'family'},
-    {l:'Shreya Coloma bedsheet',m:'all',resp:'person'},{l:'Bath mat',m:'all',resp:'family'},
-    {l:'Socks (extra)',m:'all',resp:'person'},{l:'Head cap / beanie',m:'all',resp:'person'},
-    {l:'RV mattress topper',m:'rv',resp:'family'},{l:'RV window blinds / curtains',m:'rv',resp:'family'},
-    {l:'Eye mask / ear plugs',m:'all',resp:'person'},{l:'Extra pillow cases',m:'all',resp:'person'},
+    {l:'Sleeping bag', resp:'person'}, {l:'Air mattress / Pad', resp:'person'},
+    {l:'Pillow & Blanket', resp:'person'}, {l:'Eye mask / Ear plugs', resp:'person'}
   ]},
   {id:'clothing',name:'Clothing & Footwear',icon:'👕',items:[
-    {l:'Towels',m:'all',resp:'person'},{l:'Pajamas',m:'all',resp:'person'},
-    {l:'Slippers / flip flops / sandals',m:'all',resp:'person'},{l:'Jackets / hoodie',m:'all',resp:'person'},
-    {l:'Raincoat / ponchos',m:'all',resp:'person'},{l:'Sweatshirts',m:'all',resp:'person'},
-    {l:'Long sleeve shirts',m:'all',resp:'person'},{l:'Gloves / mittens',m:'all',resp:'person'},
-    {l:'Shorts / tees',m:'all',resp:'person'},{l:'Undergarments',m:'all',resp:'person'},
-    {l:'Hiking boots / shoes',m:'all',resp:'person'},{l:'Swimming costumes',m:'all',resp:'person'},
-    {l:'Warm socks (extra pairs)',m:'tent',resp:'person'},{l:'Thermal base layer',m:'tent',resp:'person'},
-    {l:'Camp shoes / Crocs',m:'all',resp:'person'},
+    {l:'Towels', resp:'person'}, {l:'Jackets / Raincoat', resp:'person'},
+    {l:'Hiking boots', resp:'person'}, {l:'Warm socks', resp:'person'},
+    {l:'Swimwear', resp:'person'}, {l:'Undergarments', resp:'person'}
   ]},
   {id:'hygiene',name:'Toiletries & Hygiene',icon:'🧴',items:[
-    {l:'Soap / soap box',m:'all',resp:'person'},{l:'Shampoo / shaving kit',m:'all',resp:'person'},
-    {l:'Comb / feminine products',m:'all',resp:'person'},{l:'Face & hand towels',m:'all',resp:'person'},
-    {l:'Hand soap / deodorant',m:'all',resp:'person'},{l:'Toothbrush / toothpaste',m:'all',resp:'person'},
-    {l:'Bobby pins / hair pins',m:'all',resp:'person'},{l:'Moisturizer / hair ties',m:'all',resp:'person'},
-    {l:'Hand held mirror',m:'all',resp:'family'},{l:'Toilet paper / wipes',m:'all',resp:'family'},
-    {l:'Quick-dry camp towel',m:'tent',resp:'person'},{l:'Portable camp shower bag',m:'tent',resp:'family'},
-    {l:'Disposable toilet paper',m:'tent',resp:'shared'},{l:'RV toilet chemicals',m:'rv',resp:'family'},
-    {l:'RV-safe toilet paper',m:'rv',resp:'family'},{l:'Shower caddy / bag',m:'all',resp:'person'},
-    {l:'Nail clippers / tweezers',m:'all',resp:'person'},
+    {l:'Toothbrush & Paste', resp:'person'}, {l:'Soap / Shampoo', resp:'person'},
+    {l:'Toilet paper / Wipes', resp:'family'}, {l:'Hand sanitizer', resp:'person'}
   ]},
-  {id:'health',name:'Health & Medications',icon:'🩹',items:[
-    {l:'First aid kit / bandaids',m:'all',resp:'family'},{l:'GS medicine',m:'all',resp:'family'},
-    {l:'Tylenol / ibuprofen',m:'all',resp:'family'},{l:'Medical ID / information card',m:'all',resp:'person'},
-    {l:'Emergency contact list',m:'all',resp:'shared'},{l:'Neosporin / antiseptic cream',m:'all',resp:'shared'},
-    {l:'Hydrogen peroxide',m:'all',resp:'shared'},{l:'Zandu balm / Vicks',m:'all',resp:'family'},
-    {l:'Biofreeze / Iodex',m:'all',resp:'family'},{l:'Nyquil / antihistamine',m:'all',resp:'family'},
-    {l:'Aloe vera gel (sunburn)',m:'all',resp:'shared'},{l:'Blister pack / moleskin',m:'tent',resp:'shared'},
-    {l:'Prescription medications',m:'all',resp:'person'},{l:'Insect bite relief cream',m:'all',resp:'shared'},
-    {l:'Antacids / digestive aids',m:'all',resp:'shared'},
+  {id:'health',name:'Health & Meds',icon:'🩹',items:[
+    {l:'First aid kit', resp:'family'}, {l:'Pain relievers', resp:'family'},
+    {l:'Personal medications', resp:'person'}, {l:'Sunburn gel (Aloe)', resp:'shared'}
   ]},
-  {id:'protect',name:'Sun, Bug & Weather',icon:'🌤️',items:[
-    {l:'Sunscreen SPF 50+',m:'all',resp:'person'},{l:'Sunglasses',m:'all',resp:'person'},
-    {l:'Hats',m:'all',resp:'person'},{l:'Bug spray / hand sanitizer',m:'all',resp:'family'},
-    {l:'Insect / mosquito repellent',m:'all',resp:'family'},{l:'Life jacket / mask',m:'all',resp:'person'},
-    {l:'Umbrella',m:'all',resp:'person'},{l:'Rain jackets',m:'all',resp:'person'},
-    {l:'Pocket knife',m:'all',resp:'person'},{l:'Bear canister / food hang bag',m:'tent',resp:'shared'},
-    {l:'Emergency whistle',m:'all',resp:'person'},{l:'Citronella candles',m:'all',resp:'shared'},
-    {l:'DEET-free repellent wipes',m:'all',resp:'shared'},{l:'Air freshener',m:'all',resp:'shared'},
+  {id:'protect',name:'Sun & Bugs',icon:'🌤️',items:[
+    {l:'Sunscreen', resp:'person'}, {l:'Bug spray', resp:'family'},
+    {l:'Sunglasses & Hats', resp:'person'}, {l:'Umbrella', resp:'person'}
   ]},
-  {id:'vehicle',name:'Vehicle & Navigation',icon:'🚗',items:[
-    {l:'Car RC book / insurance',m:'all',resp:'family'},{l:'Driving license / passport',m:'all',resp:'person'},
-    {l:'Cash / map / dollar / quarter',m:'all',resp:'person'},{l:'Car battery charger',m:'all',resp:'family'},
-    {l:'Tire pressure gauge / inflator',m:'all',resp:'family'},{l:'Duct tape / scissors',m:'all',resp:'shared'},
-    {l:'Zip ties / hammer',m:'all',resp:'shared'},{l:'Tow rope / jumper cables',m:'all',resp:'shared'},
-    {l:'RV slide-out lubricant',m:'rv',resp:'family'},{l:'RV roof sealant / spare fuses',m:'rv',resp:'family'},
-    {l:'GPS / offline maps downloaded',m:'all',resp:'person'},{l:'Roadside emergency kit',m:'all',resp:'family'},
-    {l:'AirTag / GPS tracker',m:'all',resp:'family'},
-  ]},
-  {id:'fun',name:'Fun & Miscellaneous',icon:'🎲',items:[
-    {l:'Books',m:'all',resp:'person'},{l:'Cards / dice / board games',m:'all',resp:'shared'},
-    {l:'Ball / racket / badminton',m:'all',resp:'shared'},{l:'Flying disc / frisbee',m:'all',resp:'shared'},
-    {l:'Wallet / ID',m:'all',resp:'person'},{l:'Pen & notepad',m:'all',resp:'shared'},
-    {l:'Binoculars / star chart',m:'all',resp:'shared'},{l:'Portable Bluetooth speaker',m:'all',resp:'shared'},
-    {l:'Camera & extra batteries',m:'all',resp:'person'},{l:'Kids activity pack',m:'all',resp:'family'},
-    {l:'Kite / badminton set',m:'all',resp:'shared'},{l:'Hammock straps',m:'all',resp:'shared'},
-    {l:'Fishing gear / license',m:'all',resp:'shared'},{l:'Camp journal',m:'all',resp:'person'},
-    {l:'Marshmallow roasting sticks',m:'all',resp:'shared'},
-  ]},
+  {id:'fun',name:'Fun & Extras',icon:'🎲',items:[
+    {l:'Cards / Board games', resp:'shared'}, {l:'Books', resp:'person'},
+    {l:'Portable Speaker', resp:'shared'}, {l:'Hammock', resp:'shared'}
+  ]}
 ];
 
-const MEAL_TYPES = [
-  {k:'tea',lbl:'☕ Morning Tea',cls:'mb-tea'},{k:'coffee',lbl:'☕ Coffee',cls:'mb-coffee'},
-  {k:'breakfast',lbl:'🍳 Breakfast',cls:'mb-breakfast'},{k:'lunch',lbl:'🥗 Lunch',cls:'mb-lunch'},
-  {k:'snacks',lbl:'🍿 Snacks',cls:'mb-snacks'},{k:'dinner',lbl:'🍽️ Dinner',cls:'mb-dinner'},
-];
-
-// ══════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════
-let TRIP_CODE  = null;
-let trip       = {tripName:'',location:'',startDate:'',endDate:'',mode:'all'};
-let families   = [];
-let checks     = {};
-let meals      = {};
-let itinerary  = {};
-let expenses   = [];
-let notes      = '';
-let numDays    = 3;
-let currentUser= null;
-let cMode='all', srch='';
-let catOpen={};
-let RF={shared:true,family:true,person:true};
-let respMenuTargetData2=null;
-let setupFamilies=[{name:'Family 1',members:[]}];
-let showNA=true; // ✅ FIX 3: moved to module scope (was declared inside toggleNAFilter)
-
-// ═══════════════════════════════════════
-// DATE CONSTRAINTS  ← ✅ FIX 1: DEFINED HERE, before it's called
-// ═══════════════════════════════════════
-function initDateConstraints(){
-  const today = todayStr();
-  const stEl  = document.getElementById('s-st');
-  const enEl  = document.getElementById('s-en');
-  if(stEl) stEl.min = today;
-  if(enEl) enEl.min = today;
-}
-function todayStr(){const d=new Date();return d.toISOString().split('T')[0];}
-function onStartDateChange(){
-  const st=document.getElementById('s-st').value;
-  const enEl=document.getElementById('s-en');
-  const errSt=document.getElementById('err-st');
-  const today=todayStr();
-  if(errSt){if(st&&st<today){document.getElementById('s-st').classList.add('err');errSt.style.display='block';}
-  else{document.getElementById('s-st').classList.remove('err');errSt.style.display='none';}}
-  if(st){enEl.min=st;if(enEl.value&&enEl.value<st)enEl.value=st;}
-}
-function onEndDateChange(){
-  const st=document.getElementById('s-st').value;
-  const en=document.getElementById('s-en').value;
-  const errEn=document.getElementById('err-en');
-  if(errEn){if(st&&en&&en<st){document.getElementById('s-en').classList.add('err');errEn.style.display='block';}
-  else{document.getElementById('s-en').classList.remove('err');errEn.style.display='none';}}
+// ═══════════════════════════════════════════════════════
+// INIT & AUTHENTICATION (SAFARI POP-UP FIX INCLUDED)
+// ═══════════════════════════════════════════════════════
+function toast(msg, warn=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = warn ? 'warn show' : 'show';
+  setTimeout(() => t.className = '', 3000);
 }
 
-// ═══════════════════════════════════════
-// AUTH FUNCTIONS
-// ═══════════════════════════════════════
-function signInGoogle(){
-  const provider=new firebase.auth.GoogleAuthProvider();
-  fbAuth.signInWithPopup(provider).catch(err=>{
-    if(err.code!=='auth/popup-closed-by-user') toastWarn('Sign-in failed: '+err.message);
+// 1. Handle Safari Redirect Login Callback seamlessly
+fbAuth.getRedirectResult().then(result => {
+  if (result.user) console.log("Logged in via redirect successfully.");
+}).catch(err => {
+  if (err.code !== 'auth/redirect-cancelled-by-user') toast("Login err: " + err.message, true);
+});
+
+function signInGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  // Using redirect completely avoids Safari/iOS popup blockers
+  fbAuth.signInWithRedirect(provider);
+}
+
+function sendEmailLink() {
+  const email = document.getElementById('auth-email-inp').value.trim();
+  if(!email) return toast("Enter email", true);
+  fbAuth.sendSignInLinkToEmail(email, {url: window.location.href, handleCodeInApp: true}).then(() => {
+    localStorage.setItem('emailForSignIn', email);
+    document.getElementById('auth-sent-msg').style.display = 'block';
+  }).catch(e => toast(e.message, true));
+}
+
+function signOut() {
+  fbAuth.signOut().then(() => {
+    localStorage.removeItem('campTripCode'); // Clear default trip on signout
+    window.location.hash = '';
+    window.location.reload();
   });
 }
-function showEmailForm(){document.getElementById('auth-email-form').classList.add('show');}
-function hideEmailForm(){
-  document.getElementById('auth-email-form').classList.remove('show');
-  document.getElementById('auth-sent-msg').style.display='none';
-}
-function sendEmailLink(){
-  const email=document.getElementById('auth-email-inp').value.trim();
-  if(!email){toastWarn('Please enter your email');return;}
-  fbAuth.sendSignInLinkToEmail(email,{url:window.location.href,handleCodeInApp:true})
-    .then(()=>{
-      localStorage.setItem('emailForSignIn',email);
-      document.getElementById('auth-sent-msg').style.display='block';
-    })
-    .catch(err=>toastWarn('Error: '+err.message));
-}
-function signOut(){
-  fbAuth.signOut().then(()=>{
-    document.getElementById('app').style.display='none';
-    document.getElementById('setup').style.display='none';
-    document.getElementById('who-modal').classList.remove('show');
-    currentUser=null; TRIP_CODE=null;
-    renderAuthScreenForUser(null);
-    document.getElementById('auth-screen').style.display='flex';
-  });
-}
-function continueAsSignedInUser(){
-  document.getElementById('auth-screen').style.display='none';
-  routeAfterAuth(fbAuth.currentUser);
-}
-function renderAuthScreenForUser(user){
-  const alreadyPanel=document.getElementById('auth-already-signed-in');
-  const signInPanel =document.getElementById('auth-sign-in-panel');
-  if(user){
-    alreadyPanel.style.display='block'; signInPanel.style.display='none';
-    const av=document.getElementById('auth-already-avatar');
-    if(user.photoURL){
-      av.outerHTML=`<img id="auth-already-avatar" src="${user.photoURL}" alt="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;">`;
-    } else {
-      av.textContent=(user.displayName||user.email||'?')[0].toUpperCase();
-    }
-    document.getElementById('auth-already-name').textContent=user.displayName||'Signed in';
-    document.getElementById('auth-already-email').textContent=user.email||'(anonymous)';
-  } else {
-    alreadyPanel.style.display='none'; signInPanel.style.display='block';
-  }
-}
 
-async function routeAfterAuth(user){
-  if(fbAuth.isSignInWithEmailLink(window.location.href)){
-    let email=localStorage.getItem('emailForSignIn');
-    if(!email) email=window.prompt('Enter your email to confirm sign-in:');
-    if(email){
-      try{
-        await fbAuth.signInWithEmailLink(email,window.location.href);
-        localStorage.removeItem('emailForSignIn');
-        history.replaceState(null,'',location.pathname+location.hash);
-      }catch(err){toastWarn('Link error: '+err.message);}
+fbAuth.onAuthStateChanged(async (user) => {
+  // Handle Email link sign-in returning
+  if (fbAuth.isSignInWithEmailLink(window.location.href)) {
+    let email = localStorage.getItem('emailForSignIn') || window.prompt("Confirm email:");
+    if(email) {
+      try { await fbAuth.signInWithEmailLink(email, window.location.href); localStorage.removeItem('emailForSignIn'); }
+      catch(e) { toast("Link error", true); }
     }
+  }
+
+  const s = document.querySelectorAll('.screen');
+  s.forEach(el => el.classList.remove('active'));
+
+  if (!user) {
+    document.getElementById('auth-screen').classList.add('active');
     return;
   }
-  if(!user){
-    document.getElementById('ls').style.display='none';
-    renderAuthScreenForUser(null);
-    document.getElementById('auth-screen').style.display='flex';
+
+  // Determine Trip Code (URL Hash wins, else localStorage fallback)
+  let hashCode = window.location.hash.replace('#','').trim().toUpperCase();
+  let savedCode = localStorage.getItem('campTripCode');
+  let activeCode = (hashCode && /^[A-Z0-9]{4,10}$/.test(hashCode)) ? hashCode : savedCode;
+
+  if (!activeCode) {
+    // Brand new user, no links. Show setup.
+    renderSetupFams();
+    document.getElementById('setup').classList.add('active');
     return;
   }
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('ls').style.display='flex';
 
-  // ── URL hash ALWAYS wins over localStorage ──────────────────────────────
-  // This ensures shared links always open the correct trip regardless of
-  // whatever trip this device previously had saved.
-  const codeFromURL = getTripCodeFromURL();
-  const savedCode   = localStorage.getItem('campTripCode');
+  // Load existing trip
+  document.getElementById('ls').style.opacity = '1';
+  document.getElementById('ls').style.display = 'flex';
+  
+  const data = await fbGet(activeCode);
+  document.getElementById('ls').style.opacity = '0';
+  setTimeout(() => document.getElementById('ls').style.display = 'none', 300);
 
-  // If the URL has a code that differs from the saved code, clear the saved
-  // code so there's no confusion — the visitor is joining a different trip.
-  if(codeFromURL && codeFromURL !== savedCode){
+  if (!data || !data.tripName) {
+    toast("Trip not found or deleted.", true);
     localStorage.removeItem('campTripCode');
-  }
-
-  const activeCode = codeFromURL || savedCode;
-
-  // No code anywhere → brand new trip, show setup wizard
-  if(!activeCode){
-    document.getElementById('ls').style.display='none';
-    renderFamBuilder();
-    document.getElementById('setup').style.display='flex';
+    window.location.hash = '';
+    renderSetupFams();
+    document.getElementById('setup').classList.add('active');
     return;
   }
 
-  document.getElementById('ls-msg').textContent='Loading trip…';
-  const lsSub=document.getElementById('ls-sub');
-  if(lsSub) lsSub.textContent=activeCode;
+  // Success Loading
+  TRIP_CODE = activeCode;
+  localStorage.setItem('campTripCode', TRIP_CODE); // Save for next time!
+  if(!hashCode) history.replaceState(null, '', location.pathname + '#' + TRIP_CODE); // Sync URL
+  
+  trip = { tripName: data.tripName, location: data.location, startDate: data.startDate, endDate: data.endDate };
+  families = data.families ||[];
+  checks = data.checks || {}; meals = data.meals || {};
+  itinerary = data.itinerary || {}; expenses = Array.isArray(data.expenses) ? data.expenses : Object.values(data.expenses || {});
+  notes = data.notes || ''; numDays = data.numDays || 3;
 
-  const data=await fbGet(activeCode);
-  document.getElementById('ls').style.display='none';
+  const identities = data.identities || {};
+  currentUser = identities[user.uid];
 
-  // ── Trip not found in Firebase ───────────────────────────────────────────
-  if(!data||!data.tripName){
-    if(codeFromURL){
-      // Someone followed a shared link but the trip doesn't exist (deleted /
-      // wrong code). Show a clear error — do NOT open the setup wizard with
-      // their code, which would let a stranger overwrite the trip.
-      showInvalidCodeScreen(codeFromURL);
-    } else {
-      // Their locally saved code no longer resolves — start fresh
-      localStorage.removeItem('campTripCode');
-      renderFamBuilder();
-      document.getElementById('setup').style.display='flex';
-    }
-    return;
-  }
-
-  // ── Trip found — load and route ──────────────────────────────────────────
-  TRIP_CODE=activeCode;
-  loadTripData(data);
-  localStorage.setItem('campTripCode',TRIP_CODE);
-
-  const identities  = data.identities||{};
-  const linkedName  = identities[user.uid];
-  const allMembers  = families.flatMap(f=>f.members);
-
-  if(linkedName && allMembers.includes(linkedName)){
-    // Returning user — recognised on this device, go straight to app
-    currentUser=linkedName;
-    showApp();
+  const allMembers = families.flatMap(f => f.members);
+  if (currentUser && allMembers.includes(currentUser)) {
+    bootApp();
   } else {
-    // New visitor to this trip (or identity not yet linked) — ask who they are
     showWhoModal(false);
   }
-}
+});
 
-// ─── INIT — ✅ FIX 1: initDateConstraints is now defined above ───
-initDateConstraints();
-fbAuth.onAuthStateChanged(user=>{ routeAfterAuth(user); });
+function continueAsSignedInUser() { bootApp(); }
 
-function loadTripData(data) {
-  trip     = {tripName:data.tripName||'',location:data.location||'',startDate:data.startDate||'',endDate:data.endDate||'',mode:data.mode||'all'};
-  families = data.families || [];
-  checks   = data.checks   || {};
-  meals    = data.meals    || {};
-  itinerary= data.itinerary|| {};
-  // ✅ FIX 6: Firebase returns objects for arrays — normalise expenses back to array
-  const rawExp = data.expenses || [];
-  expenses = Array.isArray(rawExp) ? rawExp : Object.values(rawExp);
-  notes    = data.notes    || '';
-  numDays  = data.numDays  || 3;
-}
-
-// ══════════════════════════════════════════════════
-// WHO-AM-I MODAL
-// ══════════════════════════════════════════════════
-// ══════════════════════════════════════════════════
-// INVALID CODE / TRIP NOT FOUND SCREEN
-// ══════════════════════════════════════════════════
-function showInvalidCodeScreen(code){
-  document.getElementById('invalid-code-display').textContent = code;
-  document.getElementById('invalid-code-screen').style.display = 'flex';
-  document.getElementById('ls').style.display = 'none';
-}
-function startFreshTrip(){
-  // Clear URL hash and localStorage so we get a clean slate
-  history.replaceState(null, '', location.pathname);
-  localStorage.removeItem('campTripCode');
-  TRIP_CODE = null;
-  document.getElementById('invalid-code-screen').style.display = 'none';
-  renderFamBuilder();
-  document.getElementById('setup').style.display = 'flex';
-}
-function retryCode(){
-  // Prompt the user to paste a correct link / code
-  const input = window.prompt('Paste the full trip link or just the trip code:');
-  if(!input) return;
-  // Extract code from a full URL or treat input as bare code
-  let code = input.trim().toUpperCase();
-  const hashMatch = code.match(/#([A-Z0-9]{4,10})$/);
-  if(hashMatch) code = hashMatch[1];
-  if(/^[A-Z0-9]{4,10}$/.test(code)){
-    document.getElementById('invalid-code-screen').style.display = 'none';
-    window.location.hash = code;
-    // Re-trigger auth routing with the new hash
-    routeAfterAuth(fbAuth.currentUser);
-  } else {
-    toastWarn('That doesn't look like a valid trip code. Try copying the full link.');
-  }
-}
-
-function showWhoModal(allowClose) {
-  const allMembers = families.flatMap(f=>f.members);
-  document.getElementById('who-trip-name').textContent = trip.tripName ? '✈️ ' + trip.tripName : '';
-  const list = document.getElementById('who-list');
-  list.innerHTML = allMembers.map(name => {
-    const fam = families.find(f=>f.members.includes(name));
-    return `<button class="who-btn" onclick="selectUser('${esc(name)}')">
-      <div class="who-avatar" style="background:${colourFor(name)}">${name[0].toUpperCase()}</div>
-      <span>${name}</span>
-      ${fam ? `<span class="who-fam">${fam.name}</span>` : ''}
-    </button>`;
-  }).join('');
-  if (allowClose) {
-    list.innerHTML += `<button class="who-btn" style="color:var(--muted);border-style:dashed;margin-top:4px;" onclick="document.getElementById('who-modal').classList.remove('show')">✕ Stay as ${currentUser||'guest'}</button>`;
-  }
-  document.getElementById('who-modal').classList.add('show');
-}
-async function selectUser(name) {
-  currentUser = name;
-  const user = fbAuth.currentUser;
-  if (user && TRIP_CODE) {
-    await fbPatch(TRIP_CODE, '/identities', { [user.uid]: name });
-    localStorage.setItem('campTripCode', TRIP_CODE);
-  }
-  document.getElementById('who-modal').classList.remove('show');
-  if (document.getElementById('app').style.display === 'flex') {
-    updateNavUser(); renderCL();
-  } else {
-    showApp();
-  }
-}
-function updateNavUser() {
-  if (!currentUser) return;
-  document.getElementById('nav-user-name').textContent = currentUser;
-  const dot = document.getElementById('nav-user-dot');
-  dot.style.background = colourFor(currentUser);
-  dot.textContent = currentUser[0].toUpperCase();
-}
-
-// ══════════════════════════════════════════════════
-// SETUP WIZARD
-// ══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// SETUP FLOW
+// ═══════════════════════════════════════════════════════
 function goStep(n) {
-  if (n===1) {
-    if (!document.getElementById('s-name').value.trim()) { toast('Please enter a trip name'); return; }
-    const st=document.getElementById('s-st').value, en=document.getElementById('s-en').value, today=todayStr();
-    if (st && st<today) { document.getElementById('s-st').classList.add('err'); document.getElementById('err-st').style.display='block'; return; }
-    if (st && en && en<st) { document.getElementById('s-en').classList.add('err'); document.getElementById('err-en').style.display='block'; return; }
-  }
-  if (n===2) {
-    if (!setupFamilies.filter(f=>f.name.trim()&&f.members.length).length) { toast('Add at least one family with members'); return; }
-    renderReview();
-  }
-  document.querySelectorAll('.step-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
-  // ✅ FIX 4: properly update ALL dots when navigating steps
-  for(let i=0;i<3;i++) {
-    const d=document.getElementById('dot-'+i);
-    d.className='sd'+(i<n?' done':i===n?' active':'');
-  }
+  document.querySelectorAll('.setup-step').forEach((el, i) => el.style.display = i === n ? 'block' : 'none');
 }
-function addFamily(){ setupFamilies.push({name:'Family '+(setupFamilies.length+1),members:[]}); renderFamBuilder(); }
-function removeFamily(i){ setupFamilies.splice(i,1); renderFamBuilder(); }
-function updateFamName(i,v){ setupFamilies[i].name=v; }
-function addMember(fi){
-  const inp=document.getElementById('mi-'+fi),n=inp.value.trim(); if(!n) return;
-  if(!setupFamilies[fi].members.includes(n)) setupFamilies[fi].members.push(n);
-  inp.value=''; renderFamBuilder();
-}
-function removeMember(fi,mi){ setupFamilies[fi].members.splice(mi,1); renderFamBuilder(); }
-function renderFamBuilder(){
-  const el=document.getElementById('fam-list'); if(!el) return;
-  el.innerHTML=setupFamilies.map((fam,fi)=>`
+function renderSetupFams() {
+  document.getElementById('fam-list').innerHTML = setupFamilies.map((f, i) => `
     <div class="fam-block">
-      <div class="fam-block-head">
-        <input class="fam-name-inp" value="${esc(fam.name)}" oninput="updateFamName(${fi},this.value)" placeholder="Family name"/>
-        ${setupFamilies.length>1?`<button class="fam-del-btn" onclick="removeFamily(${fi})">🗑</button>`:''}
+      <div class="flex mb-2">
+        <input type="text" value="${f.name}" oninput="setupFamilies[${i}].name=this.value" placeholder="Family Name" />
+        ${setupFamilies.length > 1 ? `<button class="btn-outline" style="width:50px; border-color:var(--red); color:var(--red);" onclick="setupFamilies.splice(${i},1);renderSetupFams()">✕</button>` : ''}
       </div>
-      <div class="fam-members">
-        ${fam.members.map((m,mi)=>`<div class="mem-chip">${m}<button onclick="removeMember(${fi},${mi})">×</button></div>`).join('')}
-        ${!fam.members.length?'<span style="font-size:12px;color:var(--muted)">No members yet</span>':''}
+      <div style="min-height:30px;">
+        ${f.members.map((m, mi) => `<span class="mem-chip">${m} <button onclick="setupFamilies[${i}].members.splice(${mi},1);renderSetupFams()">✕</button></span>`).join('')}
       </div>
-      <div class="mem-add-row">
-        <input class="mem-inp" id="mi-${fi}" type="text" placeholder="Add member name…" onkeydown="if(event.key==='Enter')addMember(${fi})"/>
-        <button class="mem-add-btn" onclick="addMember(${fi})">+ Add</button>
+      <div class="flex mt-2">
+        <input type="text" id="add-mem-${i}" placeholder="Member name" onkeydown="if(event.key==='Enter'){setupFamilies[${i}].members.push(this.value);this.value='';renderSetupFams()}" />
+        <button class="btn-primary" style="width: auto;" onclick="const v=document.getElementById('add-mem-${i}').value; if(v){setupFamilies[${i}].members.push(v);renderSetupFams()}">+ Add</button>
       </div>
-    </div>`).join('');
-}
-function renderReview(){
-  const total=setupFamilies.flatMap(f=>f.members).length;
-  document.getElementById('review-wrap').innerHTML=`
-    <div style="background:var(--paper);border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:13px;line-height:1.9;">
-      <div><b>Trip:</b> ${document.getElementById('s-name').value}</div>
-      <div><b>Location:</b> ${document.getElementById('s-loc').value||'—'}</div>
-      <div><b>Dates:</b> ${fd(document.getElementById('s-st').value)} → ${fd(document.getElementById('s-en').value)}</div>
-      <div><b>Mode:</b> ${{all:'Tent & RV',tent:'Tent',rv:'RV'}[document.getElementById('s-mode').value]}</div>
     </div>
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px;">${setupFamilies.filter(f=>f.name.trim()).length} Families · ${total} Members</div>
-    ${setupFamilies.filter(f=>f.name.trim()).map(f=>`
-      <div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--forest3);border-radius:8px;margin-bottom:6px;font-size:13px;">
-        <b style="color:var(--forest)">${f.name}</b><span style="color:var(--muted)">→</span><span>${f.members.join(', ')||'(no members)'}</span>
-      </div>`).join('')}`;
+  `).join('');
 }
-async function launch(){
-  const name=document.getElementById('s-name').value.trim();
-  if(!name){ toast('Please enter a trip name'); return; }
-  const valid=setupFamilies.filter(f=>f.name.trim()&&f.members.length);
-  if(!valid.length){ toast('Add at least one family with members'); return; }
+function addFamily() { setupFamilies.push({name:'', members:[]}); renderSetupFams(); }
 
-  if (!TRIP_CODE) {
-    TRIP_CODE = generateTripCode();
-    window.location.hash = TRIP_CODE;
-  }
+async function launchTrip() {
+  const name = document.getElementById('s-name').value.trim();
+  if(!name) return toast("Enter trip name", true);
+  const valid = setupFamilies.filter(f => f.name && f.members.length > 0);
+  if(!valid.length) return toast("Add at least 1 family with members", true);
 
-  trip={tripName:name,location:document.getElementById('s-loc').value,startDate:document.getElementById('s-st').value,endDate:document.getElementById('s-en').value,mode:document.getElementById('s-mode').value};
-  // ✅ FIX 5: deep-copy families so future edits don't mutate the saved state
-  families = valid.map(f=>({name:f.name,members:[...f.members]}));
-  checks={}; meals={}; notes=''; numDays=3; expenses=[];
-
-  await fbPut(TRIP_CODE,'',{...trip,families,checks:{},meals:{},itinerary:{},expenses:[],notes:'',numDays:3,createdAt:Date.now()});
+  TRIP_CODE = Math.random().toString(36).substring(2, 8).toUpperCase();
   localStorage.setItem('campTripCode', TRIP_CODE);
+  window.location.hash = TRIP_CODE;
 
-  document.getElementById('setup').style.display='none';
+  families = valid;
+  trip = { tripName: name, location: document.getElementById('s-loc').value, startDate: document.getElementById('s-st').value, endDate: document.getElementById('s-en').value };
+  
+  await fbPut(TRIP_CODE, '', { ...trip, families, checks:{}, meals:{}, itinerary:{}, expenses:[], notes:'', numDays:3 });
+  document.getElementById('setup').classList.remove('active');
   showWhoModal(false);
 }
-function openSetup(){
-  document.getElementById('s-name').value=trip.tripName;
-  document.getElementById('s-loc').value=trip.location;
-  document.getElementById('s-st').value=trip.startDate;
-  document.getElementById('s-en').value=trip.endDate;
-  document.getElementById('s-mode').value=trip.mode;
-  // ✅ FIX 5: properly deep copy members array when opening edit
-  setupFamilies=families.map(f=>({name:f.name,members:[...f.members]}));
-  renderFamBuilder(); goStep(0);
-  document.getElementById('setup').style.display='flex';
+
+// ═══════════════════════════════════════════════════════
+// IDENTITY & NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showWhoModal(allowClose) {
+  const allMembers = families.flatMap(f => f.members);
+  document.getElementById('who-list').innerHTML = allMembers.map(m => `
+    <button class="btn-outline" style="text-align: left; border-style: solid; color: var(--ink); display: flex; align-items: center; gap: 12px;" onclick="selectIdentity('${m}')">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--forest); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold;">${m[0].toUpperCase()}</div>
+      ${m}
+    </button>
+  `).join('');
+  if(allowClose) document.getElementById('who-list').innerHTML += `<button class="btn-outline" onclick="document.getElementById('who-modal').classList.remove('show')">Cancel</button>`;
+  document.getElementById('who-modal').classList.add('show');
+}
+async function selectIdentity(name) {
+  currentUser = name;
+  const user = fbAuth.currentUser;
+  if(user) await fbPatch(TRIP_CODE, '/identities', { [user.uid]: name });
+  document.getElementById('who-modal').classList.remove('show');
+  bootApp();
 }
 
-// ══════════════════════════════════════════════════
-// SHARE
-// ══════════════════════════════════════════════════
-function shareTrip(){
-  const url = getShareURL(TRIP_CODE);
-  navigator.clipboard.writeText(url).then(()=>{
-    toast('🔗 Link copied! Share it with your group.');
-  }).catch(()=>{
-    prompt('Copy this link:', url);
-  });
-}
-
-// ══════════════════════════════════════════════════
-// APP BOOT
-// ══════════════════════════════════════════════════
-function showApp(){
-  document.getElementById('app').style.display='flex';
-  document.getElementById('nav-title').textContent=trip.tripName;
-  document.getElementById('nav-code-badge').textContent=TRIP_CODE;
-  // ✅ FIX 9: nav-dates element doesn't exist — use nav-loc safely
-  const locEl = document.getElementById('nav-loc');
-  if(locEl){
-    let sub = trip.location || '';
-    if(trip.startDate && trip.endDate) sub += (sub ? ' · ' : '') + fd(trip.startDate) + ' – ' + fd(trip.endDate);
-    locEl.textContent = sub;
-  }
-  document.getElementById('sb-code').textContent=TRIP_CODE;
-  document.getElementById('sb-url').textContent=getShareURL(TRIP_CODE);
-  updateNavUser();
-  CATS.forEach(c=>catOpen[c.id]=true);
+function bootApp() {
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('nav-title').textContent = trip.tripName;
+  document.getElementById('nav-code').textContent = 'Code: ' + TRIP_CODE;
+  document.getElementById('share-code').textContent = TRIP_CODE;
+  document.getElementById('nav-user-name').textContent = currentUser || 'Guest';
+  document.getElementById('nav-user-dot').textContent = currentUser ? currentUser[0].toUpperCase() : '👤';
+  
   renderInfo(); renderCL(); renderMeals(); renderPlanner(); renderCosts();
-  document.getElementById('notes-ta').value=notes;
-  document.getElementById('days-inp').value=numDays;
-  startPoll();
+  document.getElementById('notes-ta').value = notes;
+  document.getElementById('days-inp').value = numDays;
+
+  // Poll for live sync
+  setInterval(async () => {
+    if(!TRIP_CODE) return;
+    const data = await fbGet(TRIP_CODE);
+    if(!data) return;
+    const oldC = JSON.stringify(checks), oldE = JSON.stringify(expenses);
+    checks = data.checks || {}; meals = data.meals || {}; itinerary = data.itinerary || {}; 
+    expenses = Array.isArray(data.expenses) ? data.expenses : Object.values(data.expenses || {});
+    notes = data.notes || ''; numDays = data.numDays || 3;
+    if(oldC !== JSON.stringify(checks)) renderCL();
+    if(oldE !== JSON.stringify(expenses)) renderCosts();
+    // (Other tabs could trigger smart re-renders here)
+  }, 10000);
 }
-function showTab(name,btn){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+
+function showTab(name, btn, isMobile=false) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if(isMobile) {
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  } else {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  }
   btn.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════
-// POLLING (every 8s)
-// ══════════════════════════════════════════════════
-function startPoll(){
-  setInterval(async()=>{
-    if(!TRIP_CODE) return;
-    const data=await fbGet(TRIP_CODE);
-    if(!data) return;
-    const prevC=JSON.stringify(checks),prevM=JSON.stringify(meals),prevI=JSON.stringify(itinerary),prevE=JSON.stringify(expenses);
-    const prevDays=numDays;
-    loadTripData(data);
-    if(JSON.stringify(checks)!==prevC) renderCL();
-    if(JSON.stringify(meals)!==prevM||numDays!==prevDays) { renderMeals(); document.getElementById('days-inp').value=numDays; }
-    if(JSON.stringify(itinerary)!==prevI||numDays!==prevDays) renderPlanner();
-    if(JSON.stringify(expenses)!==prevE) renderCosts();
-    document.getElementById('notes-ta').value=notes;
-  },8000);
+function shareTrip() {
+  const url = window.location.origin + window.location.pathname + '#' + TRIP_CODE;
+  navigator.clipboard.writeText(url).then(() => toast("🔗 Link copied!")).catch(() => prompt("Copy this link:", url));
 }
 
-// ══════════════════════════════════════════════════
-// INFO TAB
-// ══════════════════════════════════════════════════
-function renderInfo(){
-  const nights=trip.startDate&&trip.endDate?Math.max(0,Math.round((new Date(trip.endDate+' 12:00')-new Date(trip.startDate+' 12:00'))/864e5)):'—';
-  const total=families.flatMap(f=>f.members).length;
-  document.getElementById('info-grid').innerHTML=`
-    <div class="ic"><div class="ic-lbl">📍 Location</div><div class="ic-val" style="font-size:14px">${trip.location||'—'}</div></div>
-    <div class="ic"><div class="ic-lbl">📅 Start</div><div class="ic-val" style="font-size:13px">${ff(trip.startDate)}</div></div>
-    <div class="ic"><div class="ic-lbl">📅 End</div><div class="ic-val" style="font-size:13px">${ff(trip.endDate)}</div></div>
-    <div class="ic"><div class="ic-lbl">🌙 Nights</div><div class="ic-val">${nights}</div></div>
-    <div class="ic"><div class="ic-lbl">👨‍👩‍👧 Families</div><div class="ic-val">${families.length}</div><div class="ic-sub">${total} members total</div></div>
-    <div class="ic"><div class="ic-lbl">🏕️ Mode</div><div class="ic-val" style="font-size:13px">${{all:'Tent & RV',tent:'Tent Only',rv:'RV Only'}[trip.mode]||'All'}</div></div>
-    <div class="ic"><div class="ic-lbl">🔑 Trip Code</div><div class="ic-val" style="font-size:16px;letter-spacing:2px">${TRIP_CODE}</div></div>`;
-  document.getElementById('fov-grid').innerHTML=families.map(fam=>`
-    <div class="fov-card">
-      <div class="fov-name"><span style="width:22px;height:22px;border-radius:50%;background:${colourFor(fam.name)};display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">${fam.name[0]}</span>${fam.name}</div>
-      <div class="fov-mems">${fam.members.map(m=>`<span class="fov-mem">${m}</span>`).join('')}</div>
-    </div>`).join('');
+// ═══════════════════════════════════════════════════════
+// UI RENDERING - INFO
+// ═══════════════════════════════════════════════════════
+function renderInfo() {
+  const dFormat = (d) => d ? new Date(d + 'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+  document.getElementById('info-grid').innerHTML = `
+    <div class="info-card"><label>Location</label><div class="val">${trip.location || '—'}</div></div>
+    <div class="info-card"><label>Start Date</label><div class="val">${dFormat(trip.startDate)}</div></div>
+    <div class="info-card"><label>End Date</label><div class="val">${dFormat(trip.endDate)}</div></div>
+    <div class="info-card"><label>Families</label><div class="val">${families.length}</div></div>
+  `;
+  document.getElementById('group-grid').innerHTML = families.map(f => `
+    <div class="info-card" style="flex-direction: row; align-items: center; gap: 16px;">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--forest); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${f.name[0]}</div>
+      <div>
+        <div style="font-weight: 700; color: var(--forest);">${f.name} Family</div>
+        <div style="font-size: 12px; color: var(--muted);">${f.members.join(', ')}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
-// ══════════════════════════════════════════════════
-// CHECKLIST
-// ══════════════════════════════════════════════════
-function setMode(m,el){ cMode=m; document.querySelectorAll('.mode-pills .pill').forEach(p=>p.classList.remove('active')); el.classList.add('active'); renderCL(); }
-function setSearch(q){ srch=q.toLowerCase(); renderCL(); }
-function toggleRF(r,el){ RF[r]=!RF[r]; el.classList.toggle('off',!RF[r]); renderCL(); }
-
-function isNA(catId,label){return !!(checks[ck(catId,label)]?.na);}
-
-// ✅ FIX 3: showNA is now module-scoped (declared in STATE section above)
-function toggleNAFilter(el){ showNA=!showNA; el.classList.toggle('off',!showNA); renderCL(); }
-
-async function toggleNA(catId,label){
-  const k=ck(catId,label),cur=checks[k]||{};
-  const nowNA=!cur.na;
-  checks[k]={...cur,na:nowNA,checked:false,checkedBy:null,subChecks:{}};
-  renderCL();
-  await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
-}
-
-function getResp(catId,label){
-  const k=ck(catId,label);
-  const cat=CATS.find(c=>c.id===catId);
-  const item=cat?.items.find(i=>i.l===label);
-  return checks[k]?.resp||item?.resp||'shared';
-}
-
-async function toggleShared(catId,label){
-  if(!currentUser){ toastWarn('Tap the user icon to select your name first'); return; }
-  const k=ck(catId,label), cur=checks[k]||{};
-  if(cur.checked && cur.checkedBy && cur.checkedBy!==currentUser){
-    toastWarn(`🔒 Locked by ${cur.checkedBy} — only they can uncheck this`); return;
+// ═══════════════════════════════════════════════════════
+// UI RENDERING - CHECKLIST
+// ═══════════════════════════════════════════════════════
+function ckKey(cat, item) { return cat + '_' + btoa(unescape(encodeURIComponent(item))).replace(/[^A-Za-z0-9]/g,''); }
+async function toggleCheck(catId, itemLbl, isShared, ent='') {
+  if(!currentUser) return toast("Select your name first", true);
+  const k = ckKey(catId, itemLbl);
+  let cur = checks[k] || {resp: isShared?'shared':'person', sub:{}};
+  
+  if (isShared) {
+    if(cur.checked && cur.by && cur.by !== currentUser) return toast(`🔒 Checked by ${cur.by}`, true);
+    cur.checked = !cur.checked; cur.by = cur.checked ? currentUser : null;
+  } else {
+    let s = cur.sub[ent] || {};
+    if(s.checked && s.by && s.by !== currentUser) return toast(`🔒 Checked by ${s.by}`, true);
+    s.checked = !s.checked; s.by = s.checked ? currentUser : null;
+    cur.sub[ent] = s;
   }
-  const now=!cur.checked;
-  checks[k]={...cur,checked:now,checkedBy:now?currentUser:null,resp:getResp(catId,label)};
+  checks[k] = cur;
   renderCL();
-  await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
+  await fbPatch(TRIP_CODE, '/checks', {[k]: cur});
 }
-
-async function toggleSub(catId,label,who){
-  if(!currentUser){ toastWarn('Tap the user icon to select your name first'); return; }
-  const k=ck(catId,label), wKey=wk(who);
-  const cur=checks[k]||{}, sub=(cur.subChecks||{})[wKey]||{};
-  if(sub.checked && sub.checkedBy && sub.checkedBy!==currentUser){
-    toastWarn(`🔒 Locked by ${sub.checkedBy}`); return;
-  }
-  const now=!sub.checked;
-  const newSubs={...(cur.subChecks||{}),[wKey]:{checked:now,checkedBy:now?currentUser:null}};
-  const resp=getResp(catId,label);
-  const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-  const allDone=ents.every(e=>(newSubs[wk(e)]||{}).checked);
-  checks[k]={...cur,subChecks:newSubs,checked:allDone,checkedBy:allDone?'(all)':null,resp};
+async function cycleResp(catId, itemLbl) {
+  const k = ckKey(catId, itemLbl);
+  let cur = checks[k] || {};
+  // default from CATS array if not set
+  let baseItem = CATS.find(c=>c.id===catId).items.find(i=>i.l===itemLbl);
+  let r = cur.resp || baseItem.resp;
+  const next = r==='shared'?'family':r==='family'?'person':'shared';
+  checks[k] = {resp: next, sub: {}};
   renderCL();
-  await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
+  await fbPatch(TRIP_CODE, '/checks', {[k]: checks[k]});
 }
 
-async function cycleResp(catId,label){
-  const k=ck(catId,label),cur=checks[k]||{};
-  const order=['shared','family','person'];
-  const current=getResp(catId,label);
-  const next=order[(order.indexOf(current)+1)%3];
-  checks[k]={...cur,resp:next,subChecks:{},checked:false,checkedBy:null};
-  renderCL();
-  await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
-  const labels={shared:'🟢 Shared',family:'🟡 Per Family',person:'🔵 Per Person'};
-  toast('Responsibility → '+labels[next]);
-}
-
-function openRespMenu(e,catId,label){
-  e.stopPropagation();
-  respMenuTargetData2={catId,label};
-  const menu=document.getElementById('resp-menu');
-  menu.classList.add('show');
-  const rect=e.target.getBoundingClientRect();
-  menu.style.top=Math.min(rect.bottom+4,window.innerHeight-170)+'px';
-  menu.style.left=Math.min(rect.left,window.innerWidth-255)+'px';
-}
-async function setResp(r){
-  if(!respMenuTargetData2) return;
-  const{catId,label}=respMenuTargetData2;
-  const k=ck(catId,label);
-  checks[k]={...(checks[k]||{}),resp:r,subChecks:{},checked:false,checkedBy:null};
-  document.getElementById('resp-menu').classList.remove('show');
-  respMenuTargetData2=null;
-  renderCL();
-  await fbPatch(TRIP_CODE,'/checks',{[k]:checks[k]});
-}
-document.addEventListener('click',()=>document.getElementById('resp-menu').classList.remove('show'));
-
-async function checkAllInCat(catId){
-  if(!currentUser){ toastWarn('Select your name first'); return; }
-  const cat=CATS.find(c=>c.id===catId), items=filteredItems(cat), patch={};
-  items.forEach(item=>{
-    const k=ck(catId,item.l), cur=checks[k]||{}, resp=getResp(catId,item.l);
-    if(resp==='shared'){
-      if(!cur.checked){ checks[k]={...cur,checked:true,checkedBy:currentUser,resp}; patch[k]=checks[k]; }
-    } else {
-      const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-      const ns={...(cur.subChecks||{})};
-      ents.forEach(e=>{ const wKey=wk(e),sub=ns[wKey]||{}; if(!sub.checked||sub.checkedBy===currentUser) ns[wKey]={checked:true,checkedBy:currentUser}; });
-      const allDone=ents.every(e=>(ns[wk(e)]||{}).checked);
-      checks[k]={...cur,subChecks:ns,checked:allDone,checkedBy:allDone?'(all)':null,resp};
-      patch[k]=checks[k];
-    }
-  });
-  renderCL();
-  await fbPatch(TRIP_CODE,'/checks',patch);
-}
-
-function filteredItems(cat){
-  return cat.items.filter(i=>{
-    const mOk=cMode==='all'||i.m==='all'||i.m===cMode;
-    const sOk=!srch||i.l.toLowerCase().includes(srch);
-    const resp=getResp(cat.id,i.l);
-    const rOk=RF[resp];
-    const naOk=showNA||!isNA(cat.id,i.l);
-    return mOk&&sOk&&rOk&&naOk;
-  });
-}
-
-function renderCL(){
-  let tot=0,done=0;
-  CATS.forEach(cat=>filteredItems(cat).forEach(item=>{
-    if(isNA(cat.id,item.l)) return;
-    const resp=getResp(cat.id,item.l), k=ck(cat.id,item.l);
-    if(resp==='shared'){ tot++; if(checks[k]?.checked) done++; }
-    else { const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-      ents.forEach(e=>{ tot++; if((checks[k]?.subChecks?.[wk(e)]||{}).checked) done++; }); }
-  }));
-  const pct=tot?Math.round(done/tot*100):0;
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-lbl').textContent=done+' of '+tot+' checks done ('+pct+'%)';
-
-  const wrap=document.getElementById('cl-wrap'); wrap.innerHTML='';
-  CATS.forEach(cat=>{
-    const items=filteredItems(cat); if(!items.length) return;
-    let catTot=0,catDone=0;
-    items.forEach(item=>{
-      const resp=getResp(cat.id,item.l), k=ck(cat.id,item.l);
-      if(resp==='shared'){ catTot++; if(checks[k]?.checked) catDone++; }
-      else { const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-        ents.forEach(e=>{ catTot++; if((checks[k]?.subChecks?.[wk(e)]||{}).checked) catDone++; }); }
-    });
-    const allDone=catTot>0&&catDone===catTot, isOpen=catOpen[cat.id];
-    const card=document.createElement('div'); card.className='cat-card'+(isOpen?' open':'');
-    const head=document.createElement('div'); head.className='cat-head';
-    head.onclick=()=>{ catOpen[cat.id]=!isOpen; renderCL(); };
-    head.innerHTML=`<span class="cat-icon">${cat.icon}</span><span class="cat-title">${cat.name}</span>
-      <button class="chk-all-btn" onclick="event.stopPropagation();checkAllInCat('${cat.id}')">${allDone?'✓ all':'check all'}</button>
-      <span class="cat-badge ${allDone?'done':''}">${catDone}/${catTot}</span><span class="chevron">▼</span>`;
-    card.appendChild(head);
-    const iw=document.createElement('div'); iw.className='items-wrap';
-
-    items.forEach(item=>{
-      const k=ck(cat.id,item.l), st=checks[k]||{}, resp=getResp(cat.id,item.l);
-      const base=document.createElement('div'); base.className='item-base';
-
-      const mr=document.createElement('div');
-      mr.className='item-main-row';
-
-      let cbCls='chk-box';
-      if(resp==='shared'){
-        if(st.checked) cbCls+= st.checkedBy&&st.checkedBy!==currentUser?' locked':' checked';
-      } else {
-        const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-        const subDone=ents.filter(e=>(st.subChecks?.[wk(e)]||{}).checked).length;
-        if(subDone===ents.length&&ents.length>0) cbCls+=' checked';
-        else if(subDone>0) cbCls+=' partial';
-      }
-
-      const modeTag=item.m!=='all'?`<span class="mode-tag ${item.m}">${item.m.toUpperCase()}</span>`:'<span></span>';
-      const respLabels={shared:'🟢 Shared',family:'🟡 Per Family',person:'🔵 Per Person'};
-
-      const na=!!st.na;
-      base.className='item-base'+(na?' na-item':'');
-      const rightDiv=document.createElement('div'); rightDiv.className='item-right';
-      if(!na&&resp==='shared'&&st.checked&&st.checkedBy){
-        const lc=document.createElement('span'); lc.className='lock-chip';
-        lc.innerHTML=`🔒 ${st.checkedBy}`; rightDiv.appendChild(lc);
-      }
-      const rb=document.createElement('span');
-      rb.className=na?'resp-cycle':'resp-cycle '+resp;
-      if(na){rb.style.cssText='background:#f5ede0;color:var(--locked);border:1px solid #e0c9a8;border-radius:9px;font-size:10px;font-weight:700;padding:2px 7px;white-space:nowrap;';}
-      rb.textContent=na?'✕ N/A':respLabels[resp];
-      rb.title='Click to change responsibility';
-      if(!na) rb.onclick=(e)=>{ e.stopPropagation(); cycleResp(cat.id,item.l); };
-      rightDiv.appendChild(rb);
-      const naBtn=document.createElement('button');
-      naBtn.className='na-btn'+(na?' active':'');
-      naBtn.title=na?'Restore this item':'Mark as not needed';
-      naBtn.textContent=na?'↩':'✕ N/A';
-      naBtn.onclick=(e)=>{ e.stopPropagation(); toggleNA(cat.id,item.l); };
-      rightDiv.appendChild(naBtn);
-
-      mr.innerHTML=`
-        <div class="${cbCls}" onclick="event.stopPropagation();${!na&&resp==='shared'?`toggleShared('${cat.id}','${esc(item.l)}')`:''}"><span class="chk-mark">✓</span></div>
-        <span class="item-text">${item.l}</span>
-        ${modeTag}`;
-      mr.appendChild(rightDiv);
-      base.appendChild(mr);
-
-      if(resp!=='shared'){
-        const ents=resp==='family'?families.map(f=>f.name):families.flatMap(f=>f.members);
-        const subs=st.subChecks||{};
-        const doneCnt=ents.filter(e=>(subs[wk(e)]||{}).checked).length;
-        const expand=document.createElement('div'); expand.className='expand-rows';
-        const hdr=document.createElement('div'); hdr.className='expand-header';
-        hdr.textContent=resp==='family'?'Each family must bring:':'Each person must bring:';
-        expand.appendChild(hdr);
-
-        ents.forEach(entity=>{
-          const wKey=wk(entity), sub=subs[wKey]||{};
-          const isLocked=sub.checked&&sub.checkedBy&&sub.checkedBy!==currentUser;
-          const isDone=!!sub.checked;
-          let famNote='';
-          if(resp==='person'){ const fam=families.find(f=>f.members.includes(entity)); if(fam) famNote=` <span style="font-size:10px;color:var(--muted);">(${fam.name})</span>`; }
-
-          const er=document.createElement('div'); er.className='expand-row';
-          const echk=document.createElement('div');
-          echk.className='exp-chk '+(isDone?(isLocked?'locked':'checked'):'');
-          echk.innerHTML='<span class="exp-chk-mark">✓</span>';
-          echk.onclick=(e)=>{
-            e.stopPropagation();
-            if(isLocked){ toastWarn(`🔒 Locked by ${sub.checkedBy}`); return; }
-            toggleSub(cat.id,item.l,entity);
-          };
-          const lbl=document.createElement('span'); lbl.className='expand-lbl'; lbl.innerHTML=entity+famNote;
-          const right=document.createElement('span');
-          if(isDone&&sub.checkedBy){
-            right.className='sub-lock-chip'; right.innerHTML=`🔒 ${sub.checkedBy}`;
-          } else {
-            right.className=`exp-who-tag ${resp==='family'?'f':'p'}`;
-            right.textContent=resp==='family'?'Family':'Person';
-          }
-          er.appendChild(echk); er.appendChild(lbl); er.appendChild(right);
-          expand.appendChild(er);
-        });
-
-        const prog=document.createElement('div'); prog.className='expand-prog';
-        prog.textContent=doneCnt+' of '+ents.length+' '+(resp==='family'?'families':'people')+' packed ✓';
-        expand.appendChild(prog);
-        base.appendChild(expand);
-      }
-
-      iw.appendChild(base);
-    });
-    card.appendChild(iw); wrap.appendChild(card);
-  });
-}
-
-// ══════════════════════════════════════════════════
-// MEALS
-// ══════════════════════════════════════════════════
-async function saveDays(){
-  numDays=Math.max(1,parseInt(document.getElementById('days-inp').value)||3);
-  await fbPatch(TRIP_CODE,'',{numDays}); renderMeals(); renderPlanner();
-}
-async function addMealItem(day,mk,iid){
-  const inp=document.getElementById(iid),val=inp.value.trim(); if(!val) return;
-  const k='d'+day+'_'+mk, cur=meals[k]||{items:[],cook:''};
-  meals[k]={...cur,items:[...(cur.items||[]),val]};
-  inp.value=''; renderMeals(); await fbPatch(TRIP_CODE,'/meals',{[k]:meals[k]});
-}
-async function removeMealItem(day,mk,idx){
-  const k='d'+day+'_'+mk, cur=meals[k]||{items:[],cook:''};
-  meals[k]={...cur,items:cur.items.filter((_,i)=>i!==idx)};
-  renderMeals(); await fbPatch(TRIP_CODE,'/meals',{[k]:meals[k]});
-}
-async function setMealCook(day,mk,val,sel){
-  const k='d'+day+'_'+mk, cur=meals[k]||{items:[],cook:''};
-  meals[k]={...cur,cook:val}; sel.className='meal-cook-sel'+(val?' asgn':'');
-  await fbPatch(TRIP_CODE,'/meals',{[k]:meals[k]});
-}
-function renderMeals(){
-  const n=numDays, wrap=document.getElementById('meals-wrap'); if(!wrap) return;
-  wrap.innerHTML='';
-  const allMembers=families.flatMap(f=>f.members);
-  for(let d=1;d<=n;d++){
-    let dtStr='';
-    if(trip.startDate){ const dt=new Date(trip.startDate+' 12:00'); dt.setDate(dt.getDate()+d-1); dtStr=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
-    const card=document.createElement('div'); card.className='meal-day-card';
-    card.innerHTML=`<div class="meal-day-head"><h3>Day ${d}</h3><span class="ddt">${dtStr}</span></div>`;
-    const grid=document.createElement('div'); grid.className='meal-grid';
-    MEAL_TYPES.forEach(mt=>{
-      const k='d'+d+'_'+mt.k, st=meals[k]||{items:[],cook:''}, its=st.items||[];
-      const iid='mi_'+d+'_'+mt.k;
-      const cOpts='<option value="">Who\'s cooking?</option>'+allMembers.map(n=>`<option value="${esc(n)}" ${st.cook===n?'selected':''}>${n}</option>`).join('');
-      const iHtml=its.map((itm,i)=>`<div class="meal-item"><span>🍴 ${itm}</span><button onclick="removeMealItem(${d},'${mt.k}',${i})">✕</button></div>`).join('');
-      const sl=document.createElement('div'); sl.className='meal-slot';
-      sl.innerHTML=`
-        <div class="meal-slot-head"><span class="mbadge ${mt.cls}">${mt.lbl}</span></div>
-        <div class="meal-items-list">${iHtml}</div>
-        <div class="meal-add-row">
-          <input class="meal-add-inp" id="${iid}" type="text" placeholder="Add dish or drink…" onkeydown="if(event.key==='Enter')addMealItem(${d},'${mt.k}','${iid}')"/>
-          <button class="meal-add-btn" onclick="addMealItem(${d},'${mt.k}','${iid}')">+ Add</button>
-        </div>
-        <div class="meal-cook-row">
-          <label>👨‍🍳 Cook:</label>
-          <select class="meal-cook-sel ${st.cook?'asgn':''}" onchange="setMealCook(${d},'${mt.k}',this.value,this)">${cOpts}</select>
+function renderCL() {
+  const term = (document.getElementById('chk-search')?.value || '').toLowerCase();
+  let tot=0, done=0;
+  
+  const html = CATS.map(cat => {
+    let catH = ''; let cTot=0, cDone=0;
+    cat.items.forEach(item => {
+      if(term && !item.l.toLowerCase().includes(term)) return;
+      const k = ckKey(cat.id, item.l);
+      const state = checks[k] || {resp: item.resp};
+      const r = state.resp || item.resp;
+      
+      let rowHtml = '';
+      if (r === 'shared') {
+        tot++; cTot++; if(state.checked) { done++; cDone++; }
+        const chkClass = state.checked ? 'checked' : '';
+        rowHtml = `<div class="item-row">
+          <div class="chk ${chkClass}" onclick="toggleCheck('${cat.id}','${item.l.replace(/'/g,"\\'")}', true)"></div>
+          <div class="item-label">${item.l}</div>
+          <div class="resp-tag shared" onclick="cycleResp('${cat.id}','${item.l.replace(/'/g,"\\'")}')">Shared</div>
         </div>`;
-      grid.appendChild(sl);
+      } else {
+        const ents = r === 'family' ? families.map(f=>f.name) : families.flatMap(f=>f.members);
+        let subHtml = '';
+        let dCount = 0;
+        ents.forEach(e => {
+          tot++; cTot++;
+          const sState = (state.sub || {})[e] || {};
+          if(sState.checked) { done++; cDone++; dCount++; }
+          subHtml += `<div class="item-row" style="padding-left: 48px; background: #fafaf6; border-bottom: 1px solid #f0ede5;">
+            <div class="chk ${sState.checked?'checked':''}" onclick="toggleCheck('${cat.id}','${item.l.replace(/'/g,"\\'")}', false, '${e}')" style="width:18px;height:18px;"></div>
+            <div class="item-label" style="font-size:13px;">${e}</div>
+          </div>`;
+        });
+        const mChk = dCount === ents.length ? 'checked' : (dCount > 0 ? 'partial' : '');
+        rowHtml = `<div class="item-row" style="background:var(--paper);">
+          <div class="chk ${mChk}" style="opacity:0.5; cursor:default;"></div>
+          <div class="item-label" style="font-weight:600;">${item.l} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${dCount}/${ents.length})</span></div>
+          <div class="resp-tag ${r}" onclick="cycleResp('${cat.id}','${item.l.replace(/'/g,"\\'")}')">${r==='family'?'Per Family':'Per Person'}</div>
+        </div>` + subHtml;
+      }
+      catH += rowHtml;
     });
-    card.appendChild(grid); wrap.appendChild(card);
-  }
-}
 
-// ═══════════════════════════════════════
-// TRIP PLANNER
-// ═══════════════════════════════════════
-const ACTIVITY_TYPES=[
-  {v:'travel',l:'🚗 Travel',cls:'b-travel'},{v:'activity',l:'🎯 Activity',cls:'b-activity'},
-  {v:'food',l:'🥘 Food',cls:'b-food'},{v:'rest',l:'😴 Rest',cls:'b-rest'},{v:'other',l:'📌 Other',cls:'b-other'},
-];
-async function addTripActivity(d){
-  const time=document.getElementById('tp-time-'+d).value.trim();
-  const title=document.getElementById('tp-title-'+d).value.trim();
-  const note=document.getElementById('tp-note-'+d).value.trim();
-  const type=document.getElementById('tp-type-'+d).value;
-  if(!title){toast('Enter an activity title');return;}
-  const dKey='d'+d;
-  itinerary[dKey]=[...(itinerary[dKey]||[]),{id:Date.now(),time,title,note,type}];
-  document.getElementById('tp-title-'+d).value='';
-  document.getElementById('tp-note-'+d).value='';
-  document.getElementById('tp-time-'+d).value='';
-  renderPlanner();
-  await fbPatch(TRIP_CODE,'/itinerary',{[dKey]:itinerary[dKey]});
-}
-async function removeTripActivity(d,id){
-  const dKey='d'+d;
-  itinerary[dKey]=(itinerary[dKey]||[]).filter(a=>a.id!==id);
-  renderPlanner();
-  await fbPatch(TRIP_CODE,'/itinerary',{[dKey]:itinerary[dKey]});
-}
-function renderPlanner(){
-  const n=numDays,wrap=document.getElementById('planner-wrap');if(!wrap)return;wrap.innerHTML='';
-  const typeMap={};ACTIVITY_TYPES.forEach(t=>typeMap[t.v]=t);
-  for(let d=1;d<=n;d++){
-    let full='';
-    if(trip.startDate){const dt=new Date(trip.startDate+' 12:00');dt.setDate(dt.getDate()+d-1);full=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});}
-    const dKey='d'+d;
-    const acts=(itinerary[dKey]||[]).slice().sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
-    const card=document.createElement('div');card.className='trip-day-card';
-    card.innerHTML=`<div class="trip-day-head"><h3>Day ${d}</h3><span class="tddt">${full}</span></div>`;
-    const al=document.createElement('div');al.className='trip-act-list';
-    if(!acts.length){const em=document.createElement('div');em.style.cssText='font-size:13px;color:var(--muted);text-align:center;padding:12px 0;';em.textContent='No activities yet — add one below';al.appendChild(em);}
-    acts.forEach(act=>{
-      const t=typeMap[act.type]||typeMap['other'];
-      const ai=document.createElement('div');ai.className='trip-act-item';
-      ai.innerHTML=`<div class="trip-act-time">${act.time||'—'}</div>
-        <div class="trip-act-body">
-          <div><span class="trip-act-badge ${t.cls}">${t.l}</span></div>
-          <div class="trip-act-title">${act.title}</div>
-          ${act.note?`<div class="trip-act-note">${act.note}</div>`:''}
+    if(!catH) return '';
+    const isOpen = catOpen[cat.id];
+    return `
+      <div class="cat-card ${isOpen?'open':''}">
+        <div class="cat-head" onclick="catOpen['${cat.id}']=!catOpen['${cat.id}']; renderCL();">
+          <span style="font-size:20px; margin-right:8px;">${cat.icon}</span>
+          ${cat.name}
+          <span class="badge ${cTot>0 && cDone===cTot?'done':''}">${cDone}/${cTot}</span>
         </div>
-        <button class="trip-act-del" onclick="removeTripActivity(${d},${act.id})">✕</button>`;
-      al.appendChild(ai);
-    });
-    card.appendChild(al);
-    const typeOpts=ACTIVITY_TYPES.map(t=>`<option value="${t.v}">${t.l}</option>`).join('');
-    const form=document.createElement('div');form.className='trip-add-form';
-    form.innerHTML=`<input class="ta-time" id="tp-time-${d}" type="time"/>
-      <input class="ta-title" id="tp-title-${d}" type="text" placeholder="Activity title…" onkeydown="if(event.key==='Enter')addTripActivity(${d})"/>
-      <select id="tp-type-${d}">${typeOpts}</select>
-      <textarea class="ta-note" id="tp-note-${d}" placeholder="Notes (optional)…"></textarea>
-      <button class="trip-add-btn" onclick="addTripActivity(${d})">+ Add</button>`;
-    card.appendChild(form);wrap.appendChild(card);
-  }
-}
-
-// ═══════════════════════════════════════
-// COST SHEET
-// ═══════════════════════════════════════
-function populateCostPayer(){
-  const sel=document.getElementById('cost-payer');if(!sel)return;
-  const allM=families.flatMap(f=>f.members);
-  if(!allM.length) return;
-  // ✅ FIX 7: preserve current selection when re-rendering
-  const current=sel.value;
-  sel.innerHTML=allM.map(n=>`<option value="${esc(n)}" ${n===current?'selected':''}>${n}</option>`).join('');
-}
-async function addExpense(){
-  const desc=document.getElementById('cost-desc').value.trim();
-  const amt=parseFloat(document.getElementById('cost-amt').value);
-  const payer=document.getElementById('cost-payer').value;
-  const cat=document.getElementById('cost-cat').value;
-  const split=document.getElementById('cost-split').value;
-  if(!desc||isNaN(amt)||amt<=0){toast('Enter description and a valid amount');return;}
-  expenses.push({id:Date.now(),desc,amount:amt,payer,category:cat,split});
-  document.getElementById('cost-desc').value='';document.getElementById('cost-amt').value='';
-  renderCosts();
-  // ✅ FIX 6: use fbPut safely — expenses is always an array here
-  await fbPut(TRIP_CODE,'/expenses',expenses);
-}
-async function removeExpense(id){
-  expenses=expenses.filter(e=>e.id!==id);
-  renderCosts();
-  await fbPut(TRIP_CODE,'/expenses',expenses);
-}
-function computeBalances(){
-  const allM=families.flatMap(f=>f.members);
-  const paid={},owed={};allM.forEach(m=>{paid[m]=0;owed[m]=0;});
-  expenses.forEach(exp=>{
-    paid[exp.payer]=(paid[exp.payer]||0)+exp.amount;
-    let sp=exp.split==='all'?allM:families.map(f=>f.name);if(!sp.length)sp=allM;
-    const sh=exp.amount/sp.length;sp.forEach(m=>{owed[m]=(owed[m]||0)+sh;});
-  });
-  const net={};allM.forEach(m=>{net[m]=(paid[m]||0)-(owed[m]||0);});
-  return{paid,owed,net};
-}
-function computeSettlements(net){
-  const cred=[],deb=[];
-  Object.entries(net).forEach(([m,v])=>{if(v>0.005)cred.push({m,v});else if(v<-0.005)deb.push({m,v:Math.abs(v)});});
-  const out=[];let ci=0,di=0;const cc=[...cred],dd=[...deb];
-  while(ci<cc.length&&di<dd.length){
-    const a=Math.min(cc[ci].v,dd[di].v);out.push({from:dd[di].m,to:cc[ci].m,amount:a});
-    cc[ci].v-=a;dd[di].v-=a;if(cc[ci].v<0.005)ci++;if(dd[di].v<0.005)di++;
-  }return out;
-}
-function renderCosts(){
-  populateCostPayer();
-  const allM=families.flatMap(f=>f.members);
-  const{net}=computeBalances();
-  const total=expenses.reduce((s,e)=>s+e.amount,0);
-  const sumEl=document.getElementById('cost-summary');if(!sumEl)return;
-  let h=`<div class="cost-card"><div class="cc-name">💰 Total Spent</div><div class="cc-amount">$${total.toFixed(2)}</div><div class="cc-sub">${expenses.length} expense${expenses.length===1?'':'s'}</div></div>`;
-  allM.forEach(m=>{const n=net[m]||0;const cls=n>0.005?'clear':n<-0.005?'owed':'';
-    h+=`<div class="cost-card ${cls}"><div class="cc-name">${m}</div><div class="cc-amount">${n>=0?'+':'-'}$${Math.abs(n).toFixed(2)}</div><div class="cc-sub">${n>0.005?'gets back':n<-0.005?'owes':'settled'}</div></div>`;
-  });sumEl.innerHTML=h;
-  const catCls={food:'ct-food',transport:'ct-transport',accommodation:'ct-accommodation',activity:'ct-activity',other:'ct-other'};
-  const catLbl={food:'🥘 Food',transport:'🚗 Transport',accommodation:'🏕️ Accommodation',activity:'🎯 Activity',other:'📦 Other'};
-  const tbody=document.getElementById('cost-tbody');if(!tbody)return;
-  tbody.innerHTML=expenses.map(e=>{
-    const sp=e.split==='all'?allM:families.map(f=>f.name);
-    const sh=(e.amount/sp.length).toFixed(2);
-    const chips=sp.map(s=>`<span class="split-chip">${s} ($${sh})</span>`).join('');
-    return `<tr><td>${e.desc}</td><td style="font-weight:700;color:var(--forest)">$${e.amount.toFixed(2)}</td>
-      <td>${e.payer}</td>
-      <td><span class="cost-tag ${catCls[e.category]||'ct-other'}">${catLbl[e.category]||e.category}</span></td>
-      <td><div class="split-chips">${chips}</div></td>
-      <td><button class="cost-del-btn" onclick="removeExpense(${e.id})">🗑</button></td></tr>`;
+        <div class="items-wrap">${catH}</div>
+      </div>
+    `;
   }).join('');
-  const sels=computeSettlements(net);
-  const se=document.getElementById('cost-settle');if(!se)return;
-  if(!sels.length){se.innerHTML='<h3>💚 All settled up!</h3>';return;}
-  se.innerHTML='<h3>💸 Who Pays Whom</h3>'+sels.map(s=>`<div class="settle-row"><span style="font-weight:700">${s.from}</span><span class="settle-arrow"> → </span><span>${s.to}</span><span class="settle-amount">$${s.amount.toFixed(2)}</span></div>`).join('');
+
+  document.getElementById('cl-wrap').innerHTML = html;
+  const pct = tot === 0 ? 0 : Math.round((done/tot)*100);
+  document.getElementById('prog-fill').style.width = pct + '%';
 }
 
-// ══════════════════════════════════════════════════
-// NOTES
-// ══════════════════════════════════════════════════
-async function saveNotes(){
-  notes=document.getElementById('notes-ta').value;
-  await fbPut(TRIP_CODE,'/notes',notes); toast('Notes saved ✓');
+// ═══════════════════════════════════════════════════════
+// UI RENDERING - COSTS
+// ═══════════════════════════════════════════════════════
+function renderCosts() {
+  const allM = families.flatMap(f=>f.members);
+  
+  // Update Dropdown
+  const sel = document.getElementById('c-payer');
+  const cv = sel.value;
+  sel.innerHTML = allM.map(m => `<option value="${m}" ${m===cv?'selected':''}>${m}</option>`).join('');
+
+  // Math
+  let total = 0; const net = {}; allM.forEach(m => net[m] = 0);
+  expenses.forEach(e => {
+    total += e.amount;
+    net[e.payer] += e.amount;
+    const share = e.amount / allM.length; // Simplified to equal split for everyone
+    allM.forEach(m => net[m] -= share);
+  });
+
+  // Render Table
+  document.getElementById('cost-tbody').innerHTML = expenses.map(e => `
+    <tr>
+      <td>${e.desc}</td><td style="font-weight:bold; color:var(--forest);">$${e.amount.toFixed(2)}</td>
+      <td>${e.payer}</td>
+      <td><button class="btn-outline" style="padding:4px; font-size:12px; border:none; color:var(--red);" onclick="removeCost(${e.id})">✕</button></td>
+    </tr>
+  `).join('');
+
+  // Render Settles
+  let cred=[], deb=[];
+  Object.entries(net).forEach(([m,v]) => { if(v > 0.01) cred.push({m,v}); else if(v < -0.01) deb.push({m,v:Math.abs(v)}); });
+  let settles =[]; let ci=0, di=0;
+  while(ci < cred.length && di < deb.length) {
+    const min = Math.min(cred[ci].v, deb[di].v);
+    settles.push({from: deb[di].m, to: cred[ci].m, amt: min});
+    cred[ci].v -= min; deb[di].v -= min;
+    if(cred[ci].v < 0.01) ci++; if(deb[di].v < 0.01) di++;
+  }
+
+  document.getElementById('cost-summary').innerHTML = `
+    <div class="info-card" style="background:var(--forest); color:white; border:none;">
+      <label style="color:var(--forest3);">Total Trip Cost</label><div class="val" style="color:white;">$${total.toFixed(2)}</div>
+    </div>
+    <div class="info-card">
+      <label>Per Person Cost</label><div class="val">$${(total / (allM.length||1)).toFixed(2)}</div>
+    </div>
+  `;
+
+  document.getElementById('settle-wrap').innerHTML = '<h3 class="mb-2">💸 Who Owes Whom</h3>' + 
+    (settles.length ? settles.map(s => `
+      <div class="flex" style="justify-content:space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+        <span><b>${s.from}</b> pays <b>${s.to}</b></span>
+        <span style="color:var(--forest); font-weight:bold;">$${s.amt.toFixed(2)}</span>
+      </div>
+    `).join('') : '<p style="font-size:14px; color:var(--muted);">All settled up! 💚</p>');
 }
 
-// ══════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════
-function esc(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-function fd(d){ if(!d||d==='—') return '—'; try{ return new Date(d+' 12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }catch(e){return d;} }
-function ff(d){ if(!d) return '—'; try{ return new Date(d+' 12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }catch(e){return d;} }
-let _tt=null;
-function toast(msg,warn=false){ const t=document.getElementById('toast'); t.textContent=msg; t.className=warn?'warn show':'show'; clearTimeout(_tt); _tt=setTimeout(()=>t.className='',3200); }
-function toastWarn(msg){ toast(msg,true); }
+async function addCost() {
+  const desc = document.getElementById('c-desc').value.trim();
+  const amt = parseFloat(document.getElementById('c-amt').value);
+  const payer = document.getElementById('c-payer').value;
+  if(!desc || isNaN(amt) || amt <= 0) return toast("Enter valid cost details", true);
+  
+  expenses.push({ id: Date.now(), desc, amount: amt, payer });
+  document.getElementById('c-desc').value = ''; document.getElementById('c-amt').value = '';
+  renderCosts();
+  await fbPut(TRIP_CODE, '/expenses', expenses);
+}
+async function removeCost(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  renderCosts();
+  await fbPut(TRIP_CODE, '/expenses', expenses);
+}
+
+// ═══════════════════════════════════════════════════════
+// OTHER TABS (Simplified Placeholders to keep code strict)
+// ═══════════════════════════════════════════════════════
+async function saveNotes() {
+  notes = document.getElementById('notes-ta').value;
+  await fbPut(TRIP_CODE, '/notes', notes);
+  toast("Notes Saved!");
+}
+
+async function updateDays() {
+  numDays = Math.max(1, parseInt(document.getElementById('days-inp').value)||3);
+  await fbPatch(TRIP_CODE, '', {numDays});
+  renderMeals(); renderPlanner();
+}
+
+function renderMeals() {
+  let html = ''; const allM = families.flatMap(f=>f.members);
+  for(let d=1; d<=numDays; d++) {
+    html += `<div class="info-card"><h3 class="mb-2">Day ${d} Meals</h3>`;
+    ['Breakfast', 'Lunch', 'Dinner'].forEach(m => {
+      const k = `d${d}_${m}`; const v = meals[k]||'';
+      html += `<div class="flex mb-2" style="align-items:center;">
+        <span style="font-size:12px; font-weight:bold; width: 70px;">${m}</span>
+        <input type="text" placeholder="What's cooking?" value="${v}" onchange="meals['${k}']=this.value; fbPatch(TRIP_CODE, '/meals', {'${k}': this.value})" />
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('meals-wrap').innerHTML = html;
+}
+
+function renderPlanner() {
+  let html = '';
+  for(let d=1; d<=numDays; d++) {
+    const dKey = 'd'+d; const acts = (itinerary[dKey]||[]).slice().sort((a,b)=>a.time.localeCompare(b.time));
+    html += `<div class="info-card"><h3 class="mb-2">Day ${d} Schedule</h3>`;
+    acts.forEach(a => {
+      html += `<div class="flex" style="justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--bg);">
+        <div><span style="color:var(--sky); font-weight:bold; font-size:12px; margin-right:8px;">${a.time}</span> ${a.title}</div>
+        <button style="border:none;background:none;color:var(--red);" onclick="itinerary['${dKey}']=itinerary['${dKey}'].filter(x=>x.id!==${a.id}); fbPatch(TRIP_CODE,'/itinerary',{'${dKey}':itinerary['${dKey}']}); renderPlanner();">✕</button>
+      </div>`;
+    });
+    html += `<div class="flex mt-2">
+      <input type="time" id="t-time-${d}" style="width:100px;" />
+      <input type="text" id="t-title-${d}" placeholder="Activity..." />
+      <button class="btn-primary" style="width:auto;" onclick="const t=document.getElementById('t-time-${d}').value; const v=document.getElementById('t-title-${d}').value; if(v){itinerary['${dKey}']=[...(itinerary['${dKey}']||[]), {id:Date.now(),time:t||'00:00',title:v}]; fbPatch(TRIP_CODE,'/itinerary',{'${dKey}':itinerary['${dKey}']}); renderPlanner();}">Add</button>
+    </div></div>`;
+  }
+  document.getElementById('planner-wrap').innerHTML = html;
+}
+
 </script>
 </body>
 </html>
